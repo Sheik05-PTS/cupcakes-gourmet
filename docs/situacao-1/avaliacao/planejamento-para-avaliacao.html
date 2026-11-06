@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Cupcakes Gourmet — Avaliação do Planejamento</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm; }
+  :root { --ink:#1f2433; --muted:#5b6275; --accent:#9c2f5b; --soft:#fbf1f4; --line:#e4e6ec; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); font-size: 10.3pt; line-height: 1.5; margin: 0; background:#fff; }
+  header { border-bottom: 3px solid var(--accent); padding-bottom: 9px; margin-bottom: 14px; }
+  header .tag { color: var(--accent); font-weight: 700; font-size: 8.8pt; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { font-size: 20pt; margin: 3px 0 2px; }
+  header p { margin: 0; color: var(--muted); }
+  h2 { font-size: 12.5pt; margin: 16px 0 6px; color: var(--accent); break-after: avoid; }
+  p { margin: 4px 0 8px; }
+  ul { margin: 4px 0 8px; padding-left: 18px; }
+  li { margin: 2px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 9.6pt; }
+  th, td { border: 1px solid var(--line); padding: 5px 7px; text-align: left; vertical-align: top; }
+  th { background: var(--soft); }
+  .intro { background: var(--soft); border-radius: 8px; padding: 10px 14px; }
+  .flow { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+  .flow span { border: 1px solid var(--accent); border-radius: 14px; padding: 3px 10px; font-size: 9.3pt; }
+  .page-break { break-before: page; }
+  .small { font-size: 8.8pt; color: var(--muted); }
+  .telas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px; }
+  .telas figure { margin: 0; break-inside: avoid; }
+  .telas img { height: 104mm; width: auto; display: block; margin: 0 auto; }
+  .telas figcaption { font-size: 8.4pt; color: var(--muted); margin-top: 4px; line-height: 1.35; }
+  .telas figcaption b { color: var(--ink); }
+  .diagrama { margin: 6px 0 4px; text-align: center; }
+  .diagrama img { max-width: 100%; max-height: 205mm; }
+  .opcional { border: 1px dashed var(--accent); border-radius: 8px; padding: 6px 12px; font-size: 9.3pt; color: var(--muted); margin-bottom: 8px; }
+  .q { break-inside: avoid; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; margin: 7px 0; }
+  .q b { display: block; margin-bottom: 3px; }
+  .q span.dica { font-size: 8.8pt; color: var(--muted); }
+  .answer { height: 34px; border-bottom: 1px dashed var(--line); }
+  .girar { width: 180mm; height: 232mm; position: relative; }
+  .girar img { position: absolute; top: 0; left: 0; width: 232mm; height: 180mm; object-fit: contain; transform-origin: top left; transform: rotate(90deg) translateY(-100%); }
+  .ident td { height: 24px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Projeto Integrador II · Engenharia de Software</div>
+  <h1>Cupcakes Gourmet</h1>
+  <p>Planejamento do app para avaliação · Autor: Petterson Teixeira</p>
+</header>
+
+<div class="intro">
+  <p><b>Por que você está recebendo isto?</b> Antes de começar a programar, preciso de uma crítica sincera sobre o que planejei. São uns 10 minutos: leia o resumo, olhe as telas e responda às perguntas da última página. Pode apontar problemas sem medo, é justamente para melhorar. A parte técnica (seção 11) é opcional, só para quem é da área.</p>
+</div>
+
+<h2>1. O que é</h2>
+<p>Um app que abre no celular, pelo navegador e sem instalar nada pela loja de apps, para uma <b>loja de cupcakes gourmet vender pela internet</b>. O cliente escolhe os cupcakes, personaliza, paga e acompanha a entrega. A loja cadastra os produtos e cuida dos pedidos.</p>
+<p>A loja já teve uma experiência ruim com outro fornecedor, que entregou um app diferente do que ela precisava. Por isso, o foco deste projeto é deixar <b>tudo bem definido antes de programar</b>.</p>
+
+<h2>2. Quem usa</h2>
+<table>
+  <tr><th style="width:24%">Quem</th><th>O que pode fazer</th></tr>
+  <tr><td>Visitante (sem conta)</td><td>Ver a vitrine, filtrar, ver detalhes, montar o carrinho e consultar o frete pelo CEP</td></tr>
+  <tr><td>Cliente (com conta)</td><td>Tudo do visitante + cadastrar endereços, pagar, acompanhar pedidos e ver o histórico</td></tr>
+  <tr><td>Administrador da loja</td><td>Cadastrar e editar cupcakes, controlar o estoque e cuidar dos pedidos</td></tr>
+</table>
+
+<h2>3. O que a primeira versão (MVP) faz</h2>
+<table>
+  <tr><th style="width:24%">Área</th><th>Funcionalidades</th></tr>
+  <tr><td>Vitrine</td><td>Lista de cupcakes com foto e preço · filtros por sabor, preço, ocasião e restrição alimentar · página de detalhes com ingredientes</td></tr>
+  <tr><td>Pedido</td><td>Carrinho · personalização de recheio, cobertura e mensagem · revisão de quantidades e valores antes de pagar</td></tr>
+  <tr><td>Pagamento</td><td>Cupom de desconto · Pix ou cartão <b>simulados</b> (nenhuma cobrança real) · tela de confirmação</td></tr>
+  <tr><td>Entrega</td><td>Cadastro de endereço · frete e prazo pelo CEP · acompanhamento do pedido (Pago → Em preparo → Saiu para entrega → Entregue)</td></tr>
+  <tr><td>Conta</td><td>Cadastro, login e histórico de pedidos</td></tr>
+  <tr><td>Loja</td><td>Cadastro de cupcakes · controle de estoque · painel de pedidos que se atualiza sozinho e destaca pedidos novos</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>4. Como funciona uma compra</h2>
+<div class="flow">
+  <span>1. Vitrine</span><span>2. Detalhes e personalização</span><span>3. Carrinho</span><span>4. Entrar ou criar conta</span><span>5. Endereço, frete e cupom</span><span>6. Pagamento</span><span>7. Pedido confirmado</span><span>8. Acompanhamento</span>
+</div>
+<p class="small">Para quem já está logado, são 6 telas da vitrine até o pedido confirmado.</p>
+
+<h2>5. Principais regras</h2>
+<ul>
+  <li><b>Pagamento simulado:</b> o Pix gera um código fictício que vale 15 minutos; no cartão, números terminados em 0002 são recusados para testar o erro. As telas avisam que é um ambiente de demonstração.</li>
+  <li><b>Dados do cartão:</b> o sistema nunca guarda o número completo nem o código de segurança, só a bandeira e os 4 últimos dígitos.</li>
+  <li><b>Login só no fim:</b> dá para navegar, montar o carrinho e ver o frete sem conta. O login é pedido só para pagar, e o carrinho não se perde.</li>
+  <li><b>Cupom:</b> um por pedido, com validade e valor mínimo; o desconto não vale para o frete.</li>
+  <li><b>Entrega:</b> só nos CEPs atendidos pela loja; fora deles o app avisa antes do pagamento.</li>
+  <li><b>Estoque:</b> cupcake esgotado continua aparecendo, marcado como "Esgotado", mas não pode ser comprado.</li>
+  <li><b>Quantidade:</b> de 1 a 20 unidades de cada cupcake por pedido.</li>
+  <li><b>Personalização:</b> só nos cupcakes que aceitam; alguns recheios e coberturas têm acréscimo no preço.</li>
+  <li><b>Cancelamento:</b> só a loja cancela, até a etapa "Em preparo". Se o pedido já estava pago, o estoque volta.</li>
+  <li><b>Senha:</b> mínimo de 8 caracteres, com letra e número.</li>
+</ul>
+
+<h2>6. O que fica para depois</h2>
+<p>Pagamento real, avaliação dos pedidos, relatórios de vendas, favoritos, combos e kits presente, agendamento de entrega, programa de pontos, cancelamento pelo cliente e horário de funcionamento.</p>
+
+<h2>7. Tecnologia</h2>
+<p class="small">Python (Flask) no padrão MVC · banco PostgreSQL · telas em HTML, CSS e JavaScript · testes automatizados com Pytest · hospedagem gratuita na nuvem · código e documentação no GitHub.</p>
+
+<div class="page-break"></div>
+
+<h2>8. As telas — compra</h2>
+<p class="small">Protótipo de média fidelidade: cores, textos e componentes já são os do app. As imagens dos cupcakes são ilustrações provisórias.</p>
+<div class="telas">
+  <figure><img src="../ihc/telas/t01.png"><figcaption><b>Vitrine.</b> Filtros, preço em destaque e esgotado sem botão de compra.</figcaption></figure>
+  <figure><img src="../ihc/telas/t03.png"><figcaption><b>Detalhe.</b> Personalização com o preço final já calculado no botão.</figcaption></figure>
+  <figure><img src="../ihc/telas/t04.png"><figcaption><b>Carrinho.</b> Alterar quantidade, remover e calcular o frete pelo CEP.</figcaption></figure>
+  <figure><img src="../ihc/telas/t07.png"><figcaption><b>Finalizar pedido.</b> Endereço, frete, cupom e resumo dos valores.</figcaption></figure>
+  <figure><img src="../ihc/telas/t09.png"><figcaption><b>Pagamento com cartão.</b> Com aviso de demonstração.</figcaption></figure>
+  <figure><img src="../ihc/telas/t10.png"><figcaption><b>Pagamento com Pix.</b> Código fictício com contagem regressiva.</figcaption></figure>
+</div>
+
+<div class="page-break"></div>
+
+<h2>9. As telas — depois da compra e painel da loja</h2>
+<div class="telas">
+  <figure><img src="../ihc/telas/t11.png"><figcaption><b>Pedido confirmado.</b> Número, itens, valores, endereço e prazo.</figcaption></figure>
+  <figure><img src="../ihc/telas/t13.png"><figcaption><b>Acompanhar pedido.</b> Linha do tempo que se atualiza sozinha.</figcaption></figure>
+  <figure><img src="../ihc/telas/t20.png"><figcaption><b>Pagamento recusado.</b> Exemplo de mensagens de erro.</figcaption></figure>
+  <figure><img src="../ihc/telas/t14.png"><figcaption><b>Painel de pedidos (loja).</b> Filtro por status e destaque para pedidos novos.</figcaption></figure>
+  <figure><img src="../ihc/telas/t15.png"><figcaption><b>Detalhe do pedido (loja).</b> Avançar etapa ou cancelar.</figcaption></figure>
+  <figure><img src="../ihc/telas/t16.png"><figcaption><b>Cupcakes (loja).</b> Estoque, esgotados e ativar ou desativar na vitrine.</figcaption></figure>
+</div>
+
+<div class="page-break"></div>
+
+<h2>10. Mapa de navegação</h2>
+<p class="small">Como se vai de uma tela para outra. Linhas tracejadas são caminhos de erro. São 21 telas no total; as que não aparecem nas páginas anteriores são variações (filtros, entrar, criar conta, novo endereço, estados vazios e confirmações).</p>
+<div class="diagrama"><img src="../ihc/img/06-ihc-1.svg" style="max-height:215mm"></div>
+
+<div class="page-break"></div>
+
+<h2>11. Parte técnica (opcional)</h2>
+<div class="opcional">Esta parte é para quem é da área. Se não for o seu caso, pode pular direto para as perguntas.</div>
+<p><b>Casos de uso — visão de compra</b></p>
+<div class="diagrama"><img src="../uml/img/casos-de-uso-compra.svg" style="max-height:105mm"></div>
+<p><b>Arquitetura MVC</b></p>
+<div class="diagrama"><img src="../uml/img/02-classes-4.svg" style="max-height:70mm"></div>
+
+<div class="page-break"></div>
+
+<h2>11. Parte técnica (continuação) — modelo de dados</h2>
+<p class="small">15 tabelas no PostgreSQL. O banco já foi criado e testado: recusou 30 de 30 tentativas de gravar dados inválidos. Gire a página para ler.</p>
+<div class="girar"><img src="../dados/img/02-modelo-logico-1.svg"></div>
+
+<div class="page-break"></div>
+
+<header>
+  <div class="tag">Sua avaliação</div>
+  <h1>Perguntas</h1>
+  <p>Responda aqui, por mensagem ou por áudio, como preferir. Não precisa responder todas.</p>
+</header>
+
+<table class="ident">
+  <tr><th style="width:34%">Seu nome</th><td></td></tr>
+  <tr><th>Vínculo (ex.: colega do curso, desenvolvedor)</th><td></td></tr>
+  <tr><th>Data</th><td></td></tr>
+  <tr><th>Posso citar seu nome no trabalho?</th><td>( ) Sim, nome completo &nbsp;&nbsp; ( ) Só as iniciais &nbsp;&nbsp; ( ) Não</td></tr>
+</table>
+
+<div class="q"><b>1. O que entrou na primeira versão faz sentido para uma loja que quer começar a vender online? Falta algo essencial ou sobra alguma coisa?</b><div class="answer"></div></div>
+<div class="q"><b>2. Alguma regra ficou confusa ou dá para entender de mais de um jeito? Alguma parece injusta, para o cliente ou para a loja?</b><div class="answer"></div></div>
+<div class="q"><b>3. Olhando as telas: alguma coisa é difícil de entender ou de encontrar? Mudaria algo no visual ou nos textos?</b><div class="answer"></div></div>
+<div class="q"><b>4. Pensando como cliente, o que te faria desistir de uma compra num app desse tipo?</b><div class="answer"></div></div>
+<div class="q"><b>5. (Opcional, para quem é da área) Viu algum problema nos diagramas, no modelo de dados ou na arquitetura?</b><div class="answer"></div></div>
+<div class="q"><b>6. Mais alguma sugestão?</b><div class="answer"></div></div>
+
+<div class="q" style="background:var(--soft);border-color:var(--accent)">
+  <b>Topa testar o app quando estiver pronto?</b>
+  <span class="dica">É pelo celular, leva uns 15 minutos, e você preenche um formulário curto dizendo o que funcionou e o que não funcionou.</span>
+  <p style="margin-top:6px">( ) Sim, pode me chamar &nbsp;&nbsp;&nbsp; ( ) Não, obrigado</p>
+</div>
+
+<p class="small">Obrigado pela ajuda! Seus dados serão usados apenas para registrar a avaliação neste trabalho acadêmico.</p>
+
+</body>
+</html>

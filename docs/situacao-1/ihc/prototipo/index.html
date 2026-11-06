@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cupcakes Gourmet — Protótipo de Telas</title>
+<style>
+:root {
+  --berry: #9c2f5b; --berry-dark: #7a2147; --rose: #f7dbe4; --rose-soft: #fcf0f4;
+  --cream: #fff9f5; --card: #ffffff; --ink: #2a1f24; --muted: #75656c; --line: #eadde2;
+  --ok: #276b45; --ok-bg: #e3f3e9; --warn: #7c5200; --warn-bg: #fff2d1;
+  --err: #b3261e; --err-bg: #fce9e7; --info: #2b5797; --info-bg: #e9f0fb;
+  --radius: 14px;
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #ecebef; color: var(--ink); }
+.galeria { display: flex; flex-wrap: wrap; gap: 36px 28px; padding: 28px; }
+.galeria figure { margin: 0; }
+.galeria figcaption { font-size: 13px; margin-top: 8px; color: #444; max-width: 380px; }
+.galeria figcaption b { color: var(--ink); }
+body.unica { background: transparent; }
+body.unica .galeria { padding: 0; }
+body.unica figcaption { display: none; }
+
+/* aparelho */
+.phone { width: 380px; height: 780px; border: 10px solid #1d1b1e; border-radius: 42px; background: var(--cream);
+  overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.status { height: 30px; flex: none; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 22px; font-size: 13px; font-weight: 600; }
+.status .sinais { display: flex; gap: 5px; align-items: center; }
+.status .sinais i { display: block; width: 3px; background: var(--ink); border-radius: 1px; }
+.status .bateria { width: 22px; height: 11px; border: 1.5px solid var(--ink); border-radius: 3px; position: relative; }
+.status .bateria::after { content: ""; position: absolute; inset: 1.5px 5px 1.5px 1.5px; background: var(--ink); border-radius: 1px; }
+
+.appbar { height: 52px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 14px;
+  border-bottom: 1px solid var(--line); background: var(--cream); }
+.appbar h1 { font-size: 17px; margin: 0; flex: 1; font-weight: 650; }
+.appbar .marca { font-size: 18px; font-weight: 750; color: var(--berry); letter-spacing: -.2px; flex: 1; }
+.appbar .marca small { display: block; font-size: 10.5px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.icone-btn { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; position: relative; color: var(--ink); }
+.badge { position: absolute; top: 1px; right: 0; min-width: 17px; height: 17px; border-radius: 9px; background: var(--berry);
+  color: #fff; font-size: 10.5px; font-weight: 700; display: grid; place-items: center; padding: 0 4px; }
+svg.i { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+svg.i.p { width: 16px; height: 16px; }
+
+.conteudo { flex: 1; overflow: hidden; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.rodape-acao { flex: none; padding: 12px 16px 16px; border-top: 1px solid var(--line); background: var(--card); }
+
+.tabbar { height: 62px; flex: none; display: flex; border-top: 1px solid var(--line); background: var(--card); }
+.tabbar a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font-size: 11px; color: var(--muted); text-decoration: none; }
+.tabbar a.ativo { color: var(--berry); font-weight: 650; }
+
+/* tipografia e utilitários */
+h2 { font-size: 15px; margin: 0; }
+.sub { color: var(--muted); font-size: 12.5px; }
+.preco { font-weight: 700; }
+.linha { display: flex; align-items: center; gap: 8px; }
+.entre { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sep { height: 1px; background: var(--line); margin: 2px 0; }
+p { margin: 0; font-size: 13.5px; line-height: 1.45; }
+
+/* botões */
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 12px;
+  font-size: 15px; font-weight: 650; border: 0; width: 100%; }
+.btn.prim { background: var(--berry); color: #fff; }
+.btn.sec { background: var(--card); color: var(--berry); border: 1.5px solid var(--berry); }
+.btn.perigo { background: var(--card); color: var(--err); border: 1.5px solid var(--err); }
+.btn.desab { background: #d9d1d4; color: #fff; }
+.btn.peq { height: 36px; font-size: 13.5px; width: auto; padding: 0 14px; }
+.link { color: var(--berry); font-weight: 600; font-size: 13.5px; }
+
+/* chips */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { height: 30px; padding: 0 12px; border-radius: 15px; border: 1px solid var(--line); background: var(--card);
+  font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; }
+.chip.on { background: var(--rose); border-color: var(--berry); color: var(--berry-dark); font-weight: 600; }
+
+/* vitrine */
+.grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--line); overflow: hidden; position: relative; }
+.card .img { height: 104px; display: grid; place-items: center; }
+.card .img svg { width: 84px; height: 84px; }
+.card .info { padding: 8px 10px 10px; }
+.card .nome { font-size: 13px; font-weight: 600; line-height: 1.25; height: 33px; overflow: hidden; }
+.card .acoes { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.mais { width: 30px; height: 30px; border-radius: 9px; background: var(--berry); color: #fff; display: grid; place-items: center; }
+.esgotado .img { filter: grayscale(.9); opacity: .55; }
+.tarja { position: absolute; top: 8px; left: 8px; background: var(--ink); color: #fff; font-size: 10.5px; font-weight: 700;
+  padding: 3px 7px; border-radius: 6px; letter-spacing: .3px; }
+.tag-min { font-size: 10.5px; color: var(--muted); }
+
+/* formulários */
+.campo { display: flex; flex-direction: column; gap: 5px; }
+.campo label { font-size: 12.5px; font-weight: 600; }
+.input { height: 44px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--card); display: flex;
+  align-items: center; padding: 0 12px; font-size: 14px; color: var(--ink); gap: 8px; }
+.input.vazio { color: #a99aa0; }
+.input.foco { border-color: var(--berry); }
+.input.erro { border-color: var(--err); }
+.msg-campo { font-size: 12px; color: var(--err); display: flex; gap: 4px; align-items: center; }
+.ajuda { font-size: 12px; color: var(--muted); }
+.duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.contador { font-size: 11.5px; color: var(--muted); text-align: right; }
+
+/* avisos */
+.aviso { border-radius: 10px; padding: 10px 12px; font-size: 12.5px; display: flex; gap: 8px; line-height: 1.4; align-items: flex-start; }
+.aviso svg { flex: none; margin-top: 1px; }
+.aviso.ok { background: var(--ok-bg); color: var(--ok); }
+.aviso.warn { background: var(--warn-bg); color: var(--warn); }
+.aviso.err { background: var(--err-bg); color: var(--err); }
+.aviso.info { background: var(--info-bg); color: var(--info); }
+
+/* listas e caixas */
+.caixa { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.item { display: flex; gap: 10px; align-items: flex-start; }
+.thumb { width: 54px; height: 54px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.thumb svg { width: 44px; height: 44px; }
+.item .meio { flex: 1; min-width: 0; }
+.item .nome { font-size: 13.5px; font-weight: 600; }
+.stepper { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 9px; height: 32px; }
+.stepper span { width: 30px; text-align: center; font-size: 14px; }
+.stepper b { width: 26px; text-align: center; font-size: 13.5px; }
+.resumo div { display: flex; justify-content: space-between; font-size: 13.5px; padding: 2px 0; }
+.resumo .total { font-size: 16px; font-weight: 750; padding-top: 6px; }
+.desconto { color: var(--ok); }
+
+.radio { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--card); }
+.radio.on { border-color: var(--berry); background: var(--rose-soft); }
+.bolinha { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #b7a8ae; flex: none; margin-top: 1px; }
+.radio.on .bolinha { border: 5px solid var(--berry); }
+
+.segment { display: flex; background: #efe6ea; border-radius: 11px; padding: 3px; }
+.segment span { flex: 1; text-align: center; height: 36px; display: grid; place-items: center; font-size: 14px; border-radius: 9px; color: var(--muted); font-weight: 600; }
+.segment span.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 650; padding: 3px 8px; border-radius: 11px; white-space: nowrap; }
+.pill.aguard { background: var(--warn-bg); color: var(--warn); }
+.pill.pago { background: var(--info-bg); color: var(--info); }
+.pill.preparo { background: var(--rose); color: var(--berry-dark); }
+.pill.saiu { background: #ece6fb; color: #5a3fa0; }
+.pill.entregue { background: var(--ok-bg); color: var(--ok); }
+.pill.cancel { background: #eee; color: #555; }
+.pill.novo { background: var(--berry); color: #fff; }
+
+/* linha do tempo */
+.timeline { display: flex; flex-direction: column; }
+.passo { display: flex; gap: 12px; position: relative; padding-bottom: 16px; }
+.passo:last-child { padding-bottom: 0; }
+.passo::before { content: ""; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: var(--line); }
+.passo:last-child::before { display: none; }
+.passo.feito::before { background: var(--berry); }
+.marco { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; background: #efe8eb; color: #a3949a; }
+.passo.feito .marco { background: var(--berry); color: #fff; }
+.passo.atual .marco { background: var(--card); color: var(--berry); border: 2px solid var(--berry); }
+.passo .txt b { display: block; font-size: 13.5px; }
+.passo .txt span { font-size: 12px; color: var(--muted); }
+.passo.pend .txt b { color: #a3949a; font-weight: 500; }
+
+/* sobreposições */
+.escurece { position: absolute; inset: 30px 0 0 0; background: rgba(30,20,25,.45); }
+.folha { position: absolute; left: 0; right: 0; bottom: 0; background: var(--cream); border-radius: 20px 20px 0 0;
+  padding: 10px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.folha .alca { width: 40px; height: 5px; border-radius: 3px; background: #d8ccd1; margin: 0 auto 2px; }
+.dialogo { position: absolute; left: 24px; right: 24px; top: 250px; background: var(--card); border-radius: 18px; padding: 18px;
+  display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.snackbar { position: absolute; left: 14px; right: 14px; bottom: 92px; background: #2d2428; color: #fff; border-radius: 12px;
+  padding: 12px 14px; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center; }
+.snackbar b { color: #f6b3c8; }
+
+.vazio-estado { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; padding: 0 20px; }
+.vazio-estado .circ { width: 96px; height: 96px; border-radius: 50%; background: var(--rose-soft); display: grid; place-items: center; }
+.vazio-estado .circ svg { width: 64px; height: 64px; }
+.vazio-estado h2 { font-size: 17px; }
+
+.toggle { width: 40px; height: 24px; border-radius: 12px; background: var(--berry); position: relative; flex: none; }
+.toggle::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; top: 3px; right: 3px; }
+.toggle.off { background: #cfc5c9; }
+.toggle.off::after { right: auto; left: 3px; }
+.tabela-admin .lin { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.tabela-admin .lin:last-child { border-bottom: 0; }
+.qr { width: 150px; height: 150px; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.codigo { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; background: #f3edf0; border-radius: 8px; padding: 9px 10px; word-break: break-all; color: #4b3d43; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="cupcake" viewBox="0 0 100 100">
+      <path d="M26 58 L74 58 L67 90 Q50 94 33 90 Z" fill="var(--liner, #e9b8c6)"/>
+      <path d="M36 60 L39 89 M46 60 L47 91 M54 60 L53 91 M64 60 L61 89" stroke="rgba(0,0,0,.12)" stroke-width="2"/>
+      <path d="M20 60 C16 49 27 42 34 45 C31 35 43 28 50 33 C57 27 70 33 66 43 C75 41 85 50 80 60 Q50 66 20 60 Z" fill="var(--frost, #fff)"/>
+      <path d="M38 40 C38 27 62 27 62 40 Q50 44 38 40 Z" fill="var(--frost, #fff)"/>
+      <path d="M30 52 C38 50 46 53 52 51" stroke="rgba(255,255,255,.55)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="25" r="6" fill="var(--top, #c2185b)"/>
+      <circle cx="48" cy="23" r="1.8" fill="rgba(255,255,255,.6)"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.2h.01"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6 15h4"/></symbol>
+    <symbol id="i-hour" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M7 3c0 6 10 5 10 9s-10 3-10 9M17 3c0 6-10 5-10 9s10 3 10 9"/></symbol>
+    <symbol id="i-chef" viewBox="0 0 24 24"><path d="M7 14h10v6H7zM7 14c-3 0-4-3-2-5 0-3 3-4 5-3 1-2 4-2 5 0 2-1 5 0 5 3 2 2 1 5-2 5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V3h9l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.3"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l2-5h14l2 5M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0zM5 13v8h14v-8M10 21v-5h4v5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+  </defs>
+</svg>
+
+<div class="galeria">
+
+<!-- T01 Vitrine -->
+<figure id="t01"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><div class="marca">Cupcakes Gourmet<small>Feitos no dia, entregues na sua porta</small></div>
+    <div class="icone-btn"><svg class="i"><use href="#i-cart"/></svg><span class="badge">5</span></div></div>
+  <div class="conteudo">
+    <div class="entre"><div class="input vazio" style="flex:1;height:40px"><svg class="i p"><use href="#i-search"/></svg>Buscar cupcake</div>
+      <div class="chip on" style="height:40px;border-radius:10px"><svg class="i p"><use href="#i-filter"/></svg>Filtrar (1)</div></div>
+    <div class="chips"><span class="chip on">Até R$ 15,00 <svg class="i p" style="width:13px;height:13px"><use href="#i-x"/></svg></span></div>
+    <div class="grade">
+      <div class="card"><div class="img" style="background:#fbe3e3"><svg style="--frost:#fff;--liner:#c0392b;--top:#8e1b1b"><use href="#cupcake"/></svg></div>
+        <div class="info"><div class="nome">Red Velvet</div><div class="tag-min">Aniversário · Casamento</div><div class="acoes"><span class="preco">R$ 12,90</span><span class="mais"><svg class="i p"><use href="#i-plus"/></svg></span></div></div></div>
+      <div class="card"><div class="img" style="background:#efe4dc"><svg style="--frost:#5b3a29;--liner:#e8c9a8;--top:#2b1a12"><use href="#cupcake"/></svg></div>
+        <div class="info"><div class="nome">Brigadeiro Belga</div><div class="tag-min">Dia a dia</div><div class="acoes"><span class="preco">R$ 11,90</span><span class="mais"><svg class="i p"><use href="#i-plus"/></svg></span></div></div></div>
+      <div class="card"><div class="img" style="background:#f6f7dc"><svg style="--frost:#fbf6d0;--liner:#cddc39;--top:#9bb52a"><use href="#cupcake"/></svg></div>
+        <div class="info"><div class="nome">Limão Siciliano</div><div class="tag-min">Dia a dia · Corporativo</div><div class="acoes"><span class="preco">R$ 10,90</span><span class="mais"><svg class="i p"><use href="#i-plus"/></svg></span></div></div></div>
+      <div class="card esgotado"><span class="tarja">ESGOTADO</span><div class="img" style="background:#e8f2e1"><svg style="--frost:#b5d39a;--liner:#7aa65a;--top:#4f7a35"><use href="#cupcake"/></svg></div>
+        <div class="info"><div class="nome">Pistache</div><div class="tag-min">Casamento · Presente</div><div class="acoes"><span class="preco" style="color:var(--muted)">R$ 14,90</span></div></div></div>
+    </div>
+  </div>
+  <div class="tabbar"><a class="ativo"><svg class="i"><use href="#i-home"/></svg>Vitrine</a><a><svg class="i"><use href="#i-list"/></svg>Pedidos</a><a><svg class="i"><use href="#i-user"/></svg>Conta</a></div>
+</div><figcaption><b>T01 · Vitrine</b> — US01, US02. Cards com foto, nome e preço; esgotado sem botão de adicionar (RN02).</figcaption></figure>
+
+<!-- T02 Filtros -->
+<figure id="t02"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><div class="marca">Cupcakes Gourmet<small>Feitos no dia, entregues na sua porta</small></div><div class="icone-btn"><svg class="i"><use href="#i-cart"/></svg><span class="badge">5</span></div></div>
+  <div class="conteudo"><div class="grade"><div class="card"><div class="img" style="background:#fbe3e3"></div></div><div class="card"><div class="img" style="background:#efe4dc"></div></div></div></div>
+  <div class="escurece"></div>
+  <div class="folha">
+    <div class="alca"></div>
+    <div class="entre"><h2 style="font-size:17px">Filtrar cupcakes</h2><span class="link">Limpar filtros</span></div>
+    <div class="campo"><label>Sabor</label><div class="chips"><span class="chip">Chocolate</span><span class="chip">Frutas</span><span class="chip">Baunilha</span><span class="chip">Doce de leite</span><span class="chip">Castanhas</span></div></div>
+    <div class="campo"><label>Preço (R$)</label><div class="duas"><div class="input vazio">Mínimo</div><div class="input">15,00</div></div></div>
+    <div class="campo"><label>Ocasião</label><div class="chips"><span class="chip">Aniversário</span><span class="chip">Casamento</span><span class="chip">Corporativo</span><span class="chip">Dia a dia</span></div></div>
+    <div class="campo"><label>Restrição alimentar</label><div class="chips"><span class="chip">Sem glúten</span><span class="chip on">Sem lactose</span><span class="chip">Vegano</span></div></div>
+    <div class="btn prim">Ver 1 cupcake</div>
+  </div>
+</div><figcaption><b>T02 · Filtros</b> — US02. Filtros combinados; o botão já mostra quantos resultados existem.</figcaption></figure>
+
+<!-- T03 Detalhe -->
+<figure id="t03"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Detalhes</h1><div class="icone-btn"><svg class="i"><use href="#i-cart"/></svg><span class="badge">3</span></div></div>
+  <div class="conteudo" style="gap:10px">
+    <div style="background:#fbe3e3;border-radius:16px;height:138px;display:grid;place-items:center"><svg style="width:120px;height:120px;--frost:#fff;--liner:#c0392b;--top:#8e1b1b"><use href="#cupcake"/></svg></div>
+    <div class="entre"><h2 style="font-size:19px">Red Velvet</h2><span class="preco" style="font-size:17px">R$ 12,90</span></div>
+    <p class="sub" style="margin-top:-6px">Massa aveludada de cacau com toque de baunilha. Ingredientes: farinha de trigo, cacau, leite, ovos, manteiga, cream cheese. <b style="color:var(--ink)">Contém glúten e lactose.</b></p>
+    <div class="sep"></div>
+    <div class="duas">
+      <div class="campo"><label>Recheio</label><div class="input foco" style="justify-content:space-between">Ganache <span class="sub">+ R$ 1,50</span></div></div>
+      <div class="campo"><label>Cobertura</label><div class="input" style="justify-content:space-between">Cream cheese <span class="sub">incluso</span></div></div>
+    </div>
+    <div class="campo"><label>Mensagem no topper (opcional)</label><div class="input">Feliz aniversário, Ana!</div><div class="contador">22/60</div></div>
+  </div>
+  <div class="rodape-acao"><div class="entre" style="gap:12px">
+    <div class="stepper"><span><svg class="i p"><use href="#i-minus"/></svg></span><b>2</b><span><svg class="i p"><use href="#i-plus"/></svg></span></div>
+    <div class="btn prim">Adicionar · R$ 28,80</div></div></div>
+</div><figcaption><b>T03 · Detalhe e personalização</b> — US03, US05. Preço atualiza com os acréscimos; contador de caracteres na mensagem (RN04).</figcaption></figure>
+
+<!-- T04 Carrinho -->
+<figure id="t04"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Carrinho</h1></div>
+  <div class="conteudo">
+    <div class="caixa">
+      <div class="item"><div class="thumb" style="background:#fbe3e3"><svg style="--frost:#fff;--liner:#c0392b;--top:#8e1b1b"><use href="#cupcake"/></svg></div>
+        <div class="meio"><div class="entre"><span class="nome">Red Velvet</span><span class="preco">R$ 28,80</span></div>
+          <div class="sub">Ganache · Cream cheese · "Feliz aniversário, Ana!"</div>
+          <div class="entre" style="margin-top:6px"><div class="stepper"><span><svg class="i p"><use href="#i-minus"/></svg></span><b>2</b><span><svg class="i p"><use href="#i-plus"/></svg></span></div><span class="sub">R$ 14,40 cada</span><svg class="i p" style="color:var(--muted)"><use href="#i-trash"/></svg></div></div></div>
+      <div class="sep"></div>
+      <div class="item"><div class="thumb" style="background:#f6f7dc"><svg style="--frost:#fbf6d0;--liner:#cddc39;--top:#9bb52a"><use href="#cupcake"/></svg></div>
+        <div class="meio"><div class="entre"><span class="nome">Limão Siciliano</span><span class="preco">R$ 32,70</span></div>
+          <div class="sub">Sem personalização</div>
+          <div class="entre" style="margin-top:6px"><div class="stepper"><span><svg class="i p"><use href="#i-minus"/></svg></span><b>3</b><span><svg class="i p"><use href="#i-plus"/></svg></span></div><span class="sub">R$ 10,90 cada</span><svg class="i p" style="color:var(--muted)"><use href="#i-trash"/></svg></div></div></div>
+    </div>
+    <div class="caixa">
+      <label style="font-size:12.5px;font-weight:600">Calcular frete e prazo</label>
+      <div class="linha"><div class="input" style="flex:1">01310-100</div><div class="btn sec peq">Calcular</div></div>
+      <div class="aviso ok"><svg class="i p"><use href="#i-truck"/></svg>Frete R$ 8,00 · entrega em até 90 minutos</div>
+    </div>
+    <div class="resumo"><div><span>Subtotal (5 itens)</span><span>R$ 61,50</span></div><div class="sub"><span>Frete estimado</span><span>R$ 8,00</span></div></div>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Finalizar pedido</div></div>
+</div><figcaption><b>T04 · Carrinho</b> — US04, US06, US11 (CA11.3). Frete estimado pelo CEP mesmo sem login.</figcaption></figure>
+
+<!-- T05 Entrar -->
+<figure id="t05"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Entrar</h1></div>
+  <div class="conteudo" style="gap:14px">
+    <div class="aviso info"><svg class="i p"><use href="#i-cart"/></svg>Entre para finalizar o pedido. Seu carrinho continua salvo.</div>
+    <div class="aviso err"><svg class="i p"><use href="#i-alert"/></svg>E-mail ou senha inválidos.</div>
+    <div class="campo"><label>E-mail</label><div class="input">ana.souza@email.com</div></div>
+    <div class="campo"><label>Senha</label><div class="input foco">••••••••</div></div>
+    <div class="btn prim">Entrar</div>
+    <p style="text-align:center">Ainda não tem conta? <span class="link">Criar conta</span></p>
+  </div>
+</div><figcaption><b>T05 · Entrar</b> — US13 (CA13.5). Mensagem genérica, sem dizer se o erro foi no e-mail ou na senha.</figcaption></figure>
+
+<!-- T06 Criar conta -->
+<figure id="t06"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Criar conta</h1></div>
+  <div class="conteudo">
+    <div class="campo"><label>Nome completo</label><div class="input">Ana Paula Souza</div></div>
+    <div class="campo"><label>E-mail</label><div class="input erro">ana@email.com</div><div class="msg-campo"><svg class="i p"><use href="#i-alert"/></svg>Este e-mail já está cadastrado. <span class="link" style="font-size:12px">Entrar</span></div></div>
+    <div class="campo"><label>Celular</label><div class="input">(11) 98765-4321</div></div>
+    <div class="campo"><label>Senha</label><div class="input erro">•••••</div><div class="msg-campo"><svg class="i p"><use href="#i-alert"/></svg>Use no mínimo 8 caracteres, com letras e números.</div></div>
+    <p class="ajuda">Usamos seus dados apenas para entregar e acompanhar seus pedidos.</p>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Criar conta</div></div>
+</div><figcaption><b>T06 · Criar conta</b> — US13 (CA13.2, CA13.3). Erros no próprio campo, sem apagar o que foi digitado.</figcaption></figure>
+
+<!-- T07 Checkout -->
+<figure id="t07"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Finalizar pedido</h1></div>
+  <div class="conteudo" style="gap:10px">
+    <h2>Entregar em</h2>
+    <div class="radio on"><span class="bolinha"></span><div><b style="font-size:13.5px">Casa</b><div class="sub">Av. Paulista, 1000, ap. 52 · Bela Vista · 01310-100</div></div></div>
+    <div class="radio"><span class="bolinha"></span><div><b style="font-size:13.5px">Trabalho</b><div class="sub">R. Vergueiro, 2000 · Vila Mariana · 04101-000</div></div></div>
+    <span class="link">+ Novo endereço</span>
+    <div class="aviso ok"><svg class="i p"><use href="#i-truck"/></svg>Frete R$ 8,00 · entrega em até 90 minutos</div>
+    <div class="campo"><label>Cupom de desconto</label><div class="linha"><div class="input" style="flex:1"><svg class="i p" style="color:var(--ok)"><use href="#i-tag"/></svg>DOCE10</div><div class="btn sec peq">Remover</div></div>
+      <div class="ajuda" style="color:var(--ok)">Cupom aplicado: 10% de desconto nos produtos.</div></div>
+    <div class="caixa resumo" style="gap:0"><div><span>Subtotal (5 itens)</span><span>R$ 61,50</span></div><div class="desconto"><span>Desconto DOCE10</span><span>− R$ 6,15</span></div><div><span>Frete</span><span>R$ 8,00</span></div><div class="total"><span>Total</span><span>R$ 63,35</span></div></div>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Ir para o pagamento</div></div>
+</div><figcaption><b>T07 · Checkout</b> — US07, US10, US11. Total = subtotal − desconto + frete (RN09). Desconto não incide no frete (RN07).</figcaption></figure>
+
+<!-- T08 Novo endereço -->
+<figure id="t08"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Novo endereço</h1></div>
+  <div class="conteudo" style="gap:10px">
+    <div class="campo"><label>Identificação (opcional)</label><div class="input vazio">Ex.: Casa, Trabalho</div></div>
+    <div class="campo"><label>CEP</label><div class="input erro">0131-10</div><div class="msg-campo"><svg class="i p"><use href="#i-alert"/></svg>Informe um CEP com 8 dígitos.</div></div>
+    <div class="campo"><label>Rua / Avenida</label><div class="input">Av. Paulista</div></div>
+    <div class="duas"><div class="campo"><label>Número</label><div class="input erro vazio"> </div><div class="msg-campo"><svg class="i p"><use href="#i-alert"/></svg>Obrigatório.</div></div><div class="campo"><label>Complemento</label><div class="input">ap. 52</div></div></div>
+    <div class="campo"><label>Bairro</label><div class="input">Bela Vista</div></div>
+    <div class="duas" style="grid-template-columns:2fr 1fr"><div class="campo"><label>Cidade</label><div class="input">São Paulo</div></div><div class="campo"><label>UF</label><div class="input">SP</div></div></div>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Salvar endereço</div></div>
+</div><figcaption><b>T08 · Novo endereço</b> — US10 (CA10.2). Validação por campo (RN18).</figcaption></figure>
+
+<!-- T09 Pagamento cartão -->
+<figure id="t09"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Pagamento</h1></div>
+  <div class="conteudo">
+    <div class="aviso warn"><svg class="i p"><use href="#i-info"/></svg>Ambiente de demonstração: nenhuma cobrança real é feita.</div>
+    <div class="entre"><span class="sub">Pedido #000128</span><span class="preco" style="font-size:18px">R$ 63,35</span></div>
+    <div class="segment"><span>Pix</span><span class="on">Cartão</span></div>
+    <div class="campo"><label>Número do cartão</label><div class="input"><svg class="i p"><use href="#i-card"/></svg>4111 1111 1111 1111</div></div>
+    <div class="campo"><label>Nome impresso no cartão</label><div class="input">ANA P SOUZA</div></div>
+    <div class="duas"><div class="campo"><label>Validade</label><div class="input">08/28</div></div><div class="campo"><label>CVV</label><div class="input">•••</div></div></div>
+    <p class="ajuda linha"><svg class="i p"><use href="#i-lock"/></svg>Não guardamos o número nem o CVV do seu cartão.</p>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Pagar R$ 63,35</div></div>
+</div><figcaption><b>T09 · Pagamento com cartão</b> — US08. Aviso de demonstração (RN21) e nota de privacidade (RN12).</figcaption></figure>
+
+<!-- T10 Pix -->
+<figure id="t10"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Pagamento</h1></div>
+  <div class="conteudo" style="gap:10px">
+    <div class="aviso warn"><svg class="i p"><use href="#i-info"/></svg>Ambiente de demonstração: nenhuma cobrança real é feita.</div>
+    <div class="segment"><span class="on">Pix</span><span>Cartão</span></div>
+    <div class="qr"><svg viewBox="0 0 29 29" width="100%" height="100%" shape-rendering="crispEdges">
+      <g fill="#2a1f24"><path d="M0 0h7v7H0zM22 0h7v7h-7zM0 22h7v7H0z"/></g><g fill="#fff"><path d="M1 1h5v5H1zM23 1h5v5h-5zM1 23h5v5H1z"/></g><g fill="#2a1f24"><path d="M2 2h3v3H2zM24 2h3v3h-3zM2 24h3v3H2z"/>
+      <path d="M9 1h1v2H9zM11 0h2v1h-2zM12 2h1v3h-1zM14 1h2v2h-2zM17 0h1v4h-1zM19 2h2v1h-2zM9 5h3v1H9zM14 5h1v3h-1zM16 6h3v1h-3zM20 5h1v3h-1zM0 9h2v1H0zM3 9h1v3H3zM5 10h3v1H5zM9 9h2v2H9zM12 9h3v1h-3zM16 9h1v3h-1zM18 10h2v1h-2zM21 9h3v1h-3zM25 9h2v2h-2zM27 12h2v1h-2zM0 13h3v1H0zM6 12h2v3H6zM10 12h1v2h-1zM13 12h2v2h-2zM18 13h3v1h-3zM22 12h1v3h-1zM24 13h2v1h-2zM1 16h2v2H1zM4 15h1v3H4zM8 16h3v1H8zM12 16h1v3h-1zM14 15h3v1h-3zM19 16h1v2h-1zM21 17h3v1h-3zM26 15h2v3h-2zM9 19h2v1H9zM14 18h2v2h-2zM17 19h3v1h-3zM23 20h3v1h-3zM27 19h2v1h-2zM9 22h1v3H9zM11 23h3v1h-3zM15 22h2v2h-2zM18 22h1v4h-1zM20 23h2v1h-2zM24 23h1v3h-1zM26 22h3v1h-3zM10 26h2v2h-2zM13 27h3v1h-3zM17 27h1v2h-1zM20 26h3v1h-3zM25 27h2v2h-2z"/></g></svg></div>
+    <div class="codigo">00020126580014BR.GOV.BCB.PIX0136demo-cupcakes-pedido-000128520400005303986540563.35DEMO</div>
+    <div class="entre"><span class="btn sec peq"><svg class="i p"><use href="#i-copy"/></svg>Copiar código</span><span class="linha sub"><svg class="i p"><use href="#i-clock"/></svg>Expira em <b style="color:var(--ink)">14:32</b></span></div>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Simular pagamento</div></div>
+</div><figcaption><b>T10 · Pagamento com Pix</b> — US08 (CA08.1). Código fictício válido por 15 minutos (RN11).</figcaption></figure>
+
+<!-- T11 Confirmado -->
+<figure id="t11"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="conteudo" style="gap:12px;padding-top:26px">
+    <div style="display:grid;place-items:center;gap:10px;text-align:center">
+      <div style="width:72px;height:72px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center"><svg class="i" style="width:38px;height:38px;stroke-width:2.5"><use href="#i-check"/></svg></div>
+      <h2 style="font-size:21px">Pedido confirmado!</h2><p class="sub">Pedido <b style="color:var(--ink)">#000128</b> · pago com cartão Visa final 1111</p></div>
+    <div class="caixa">
+      <div class="entre"><span style="font-size:13.5px">2 × Red Velvet <span class="sub">(personalizado)</span></span><span>R$ 28,80</span></div>
+      <div class="entre"><span style="font-size:13.5px">3 × Limão Siciliano</span><span>R$ 32,70</span></div>
+      <div class="sep"></div>
+      <div class="entre sub"><span>Desconto DOCE10</span><span>− R$ 6,15</span></div><div class="entre sub"><span>Frete</span><span>R$ 8,00</span></div>
+      <div class="entre"><b>Total pago</b><b>R$ 63,35</b></div>
+    </div>
+    <div class="caixa">
+      <div class="linha"><svg class="i p"><use href="#i-pin"/></svg><span style="font-size:13px">Av. Paulista, 1000, ap. 52 · Bela Vista</span></div>
+      <div class="linha"><svg class="i p"><use href="#i-clock"/></svg><span style="font-size:13px">Previsão de entrega: até 90 minutos</span></div>
+    </div>
+  </div>
+  <div class="rodape-acao" style="display:flex;flex-direction:column;gap:8px"><div class="btn prim">Acompanhar pedido</div><div class="btn sec">Voltar à vitrine</div></div>
+</div><figcaption><b>T11 · Pedido confirmado</b> — US09 (CA09.1). Número, itens, total, endereço e prazo.</figcaption></figure>
+
+<!-- T12 Meus pedidos -->
+<figure id="t12"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><h1 style="padding-left:6px">Meus pedidos</h1></div>
+  <div class="conteudo" style="gap:10px">
+    <div class="caixa"><div class="entre"><b>#000128</b><span class="pill preparo"><svg class="i p" style="width:13px;height:13px"><use href="#i-chef"/></svg>Em preparo</span></div><div class="entre sub"><span>Hoje, 14:02 · 5 itens</span><span class="preco" style="color:var(--ink)">R$ 63,35</span></div></div>
+    <div class="caixa"><div class="entre"><b>#000117</b><span class="pill entregue"><svg class="i p" style="width:13px;height:13px"><use href="#i-check"/></svg>Entregue</span></div><div class="entre sub"><span>02/11, 16:40 · 4 itens</span><span class="preco" style="color:var(--ink)">R$ 41,70</span></div></div>
+    <div class="caixa"><div class="entre"><b>#000109</b><span class="pill cancel"><svg class="i p" style="width:13px;height:13px"><use href="#i-x"/></svg>Cancelado</span></div><div class="entre sub"><span>28/10, 10:15 · 2 itens</span><span class="preco" style="color:var(--ink)">R$ 25,80</span></div></div>
+  </div>
+  <div class="tabbar"><a><svg class="i"><use href="#i-home"/></svg>Vitrine</a><a class="ativo"><svg class="i"><use href="#i-list"/></svg>Pedidos</a><a><svg class="i"><use href="#i-user"/></svg>Conta</a></div>
+</div><figcaption><b>T12 · Meus pedidos</b> — US13 (CA13.7). Status com ícone e texto, nunca só cor (RNF10).</figcaption></figure>
+
+<!-- T13 Detalhe pedido -->
+<figure id="t13"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Pedido #000128</h1></div>
+  <div class="conteudo">
+    <div class="caixa"><div class="timeline">
+      <div class="passo feito"><div class="marco"><svg class="i p"><use href="#i-hour"/></svg></div><div class="txt"><b>Aguardando pagamento</b><span>Hoje, 14:02</span></div></div>
+      <div class="passo feito"><div class="marco"><svg class="i p"><use href="#i-card"/></svg></div><div class="txt"><b>Pago</b><span>Hoje, 14:03</span></div></div>
+      <div class="passo atual"><div class="marco"><svg class="i p"><use href="#i-chef"/></svg></div><div class="txt"><b>Em preparo</b><span>Hoje, 14:10 · etapa atual</span></div></div>
+      <div class="passo pend"><div class="marco"><svg class="i p"><use href="#i-truck"/></svg></div><div class="txt"><b>Saiu para entrega</b></div></div>
+      <div class="passo pend"><div class="marco"><svg class="i p"><use href="#i-check"/></svg></div><div class="txt"><b>Entregue</b></div></div>
+    </div></div>
+    <p class="ajuda linha"><svg class="i p"><use href="#i-refresh"/></svg>Esta tela se atualiza sozinha.</p>
+    <div class="caixa"><div class="entre"><span style="font-size:13.5px">2 × Red Velvet</span><span>R$ 28,80</span></div><div class="sub" style="margin-top:-6px">Ganache · Cream cheese · "Feliz aniversário, Ana!"</div><div class="entre"><span style="font-size:13.5px">3 × Limão Siciliano</span><span>R$ 32,70</span></div><div class="sep"></div><div class="entre sub"><span>Desconto DOCE10</span><span>− R$ 6,15</span></div><div class="entre sub"><span>Frete</span><span>R$ 8,00</span></div><div class="entre"><b>Total</b><b>R$ 63,35</b></div></div>
+  </div>
+</div><figcaption><b>T13 · Acompanhar pedido</b> — US12 (CA12.1, CA12.2). Linha do tempo com data e hora; atualização a cada 30 s.</figcaption></figure>
+
+<!-- T14 Admin pedidos -->
+<figure id="t14"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn" style="color:var(--berry)"><svg class="i"><use href="#i-store"/></svg></span><h1>Painel da loja</h1></div>
+  <div class="conteudo" style="gap:10px">
+    <div class="segment"><span class="on">Pedidos</span><span>Cupcakes</span></div>
+    <div class="chips"><span class="chip on">Todos</span><span class="chip">Pagos (2)</span><span class="chip">Em preparo (1)</span><span class="chip">Saiu (1)</span><span class="chip">Aguardando (1)</span></div>
+    <p class="ajuda linha"><svg class="i p"><use href="#i-refresh"/></svg>Atualizado há 12 segundos</p>
+    <div class="caixa tabela-admin" style="gap:0;padding:4px 12px">
+      <div class="lin" style="background:var(--rose-soft);margin:0 -12px;padding:10px 12px"><div style="flex:1"><div class="linha"><b>#000131</b><span class="pill novo">Novo</span></div><div class="sub">Marina L. · 14:21</div></div><div style="text-align:right"><div class="preco">R$ 52,30</div><span class="pill pago"><svg class="i p" style="width:12px;height:12px"><use href="#i-card"/></svg>Pago</span></div></div>
+      <div class="lin"><div style="flex:1"><b>#000130</b><div class="sub">Carlos R. · 14:15</div></div><div style="text-align:right"><div class="preco">R$ 35,70</div><span class="pill pago"><svg class="i p" style="width:12px;height:12px"><use href="#i-card"/></svg>Pago</span></div></div>
+      <div class="lin"><div style="flex:1"><b>#000128</b><div class="sub">Ana P. · 14:02</div></div><div style="text-align:right"><div class="preco">R$ 63,35</div><span class="pill preparo"><svg class="i p" style="width:12px;height:12px"><use href="#i-chef"/></svg>Em preparo</span></div></div>
+      <div class="lin"><div style="flex:1"><b>#000127</b><div class="sub">João S. · 13:40</div></div><div style="text-align:right"><div class="preco">R$ 47,60</div><span class="pill saiu"><svg class="i p" style="width:12px;height:12px"><use href="#i-truck"/></svg>Saiu para entrega</span></div></div>
+      <div class="lin"><div style="flex:1"><b>#000126</b><div class="sub">Beatriz M. · 13:31</div></div><div style="text-align:right"><div class="preco">R$ 21,80</div><span class="pill aguard"><svg class="i p" style="width:12px;height:12px"><use href="#i-hour"/></svg>Aguardando pagamento</span></div></div>
+    </div>
+  </div>
+</div><figcaption><b>T14 · Painel de pedidos (loja)</b> — US17 (CA17.1, CA17.6). Filtro por status e destaque para pedidos novos.</figcaption></figure>
+
+<!-- T15 Admin detalhe pedido -->
+<figure id="t15"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Pedido #000128</h1><span class="pill preparo"><svg class="i p" style="width:12px;height:12px"><use href="#i-chef"/></svg>Em preparo</span></div>
+  <div class="conteudo" style="gap:10px">
+    <div class="caixa"><b style="font-size:13.5px">Itens</b>
+      <div class="entre"><span style="font-size:13.5px">2 × Red Velvet</span><span>R$ 28,80</span></div><div class="sub" style="margin-top:-6px">Recheio Ganache · Cobertura Cream cheese<br>Mensagem: "Feliz aniversário, Ana!"</div>
+      <div class="entre"><span style="font-size:13.5px">3 × Limão Siciliano</span><span>R$ 32,70</span></div></div>
+    <div class="caixa"><div class="linha"><svg class="i p"><use href="#i-pin"/></svg><span style="font-size:13px">Ana P. · (11) 98765-4321<br>Av. Paulista, 1000, ap. 52 · 01310-100</span></div>
+      <div class="linha"><svg class="i p"><use href="#i-card"/></svg><span style="font-size:13px">Cartão Visa final 1111 · aprovado · R$ 63,35</span></div></div>
+    <div class="caixa"><b style="font-size:13.5px">Histórico</b><div class="sub">14:02 Aguardando pagamento · cliente<br>14:03 Pago · sistema<br>14:10 Em preparo · Juliana (loja)</div></div>
+  </div>
+  <div class="rodape-acao" style="display:flex;flex-direction:column;gap:8px"><div class="btn prim"><svg class="i p"><use href="#i-truck"/></svg>Avançar para "Saiu para entrega"</div><div class="btn perigo">Cancelar pedido</div></div>
+</div><figcaption><b>T15 · Detalhe do pedido (loja)</b> — US17 (CA17.2, CA17.3, CA17.4). O botão já diz qual será a próxima etapa.</figcaption></figure>
+
+<!-- T16 Admin cupcakes -->
+<figure id="t16"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn" style="color:var(--berry)"><svg class="i"><use href="#i-store"/></svg></span><h1>Painel da loja</h1></div>
+  <div class="conteudo" style="gap:10px">
+    <div class="segment"><span>Pedidos</span><span class="on">Cupcakes</span></div>
+    <div class="entre"><span class="sub">8 cupcakes · 1 esgotado · 1 inativo</span><span class="btn prim peq"><svg class="i p"><use href="#i-plus"/></svg>Novo</span></div>
+    <div class="caixa tabela-admin" style="gap:0;padding:2px 12px">
+      <div class="lin"><div class="thumb" style="width:40px;height:40px;background:#fbe3e3"><svg style="width:32px;height:32px;--frost:#fff;--liner:#c0392b;--top:#8e1b1b"><use href="#cupcake"/></svg></div><div style="flex:1"><b style="font-size:13.5px">Red Velvet</b><div class="sub">R$ 12,90 · estoque 18</div></div><span class="toggle"></span><svg class="i p" style="color:var(--muted)"><use href="#i-edit"/></svg></div>
+      <div class="lin"><div class="thumb" style="width:40px;height:40px;background:#efe4dc"><svg style="width:32px;height:32px;--frost:#5b3a29;--liner:#e8c9a8;--top:#2b1a12"><use href="#cupcake"/></svg></div><div style="flex:1"><b style="font-size:13.5px">Brigadeiro Belga</b><div class="sub">R$ 11,90 · estoque 24</div></div><span class="toggle"></span><svg class="i p" style="color:var(--muted)"><use href="#i-edit"/></svg></div>
+      <div class="lin"><div class="thumb" style="width:40px;height:40px;background:#e8f2e1"><svg style="width:32px;height:32px;--frost:#b5d39a;--liner:#7aa65a;--top:#4f7a35"><use href="#cupcake"/></svg></div><div style="flex:1"><b style="font-size:13.5px">Pistache</b><div class="sub">R$ 14,90 · <span class="pill aguard" style="padding:1px 6px"><svg class="i p" style="width:11px;height:11px"><use href="#i-alert"/></svg>Esgotado</span></div></div><span class="toggle"></span><svg class="i p" style="color:var(--muted)"><use href="#i-edit"/></svg></div>
+      <div class="lin"><div class="thumb" style="width:40px;height:40px;background:#fbead9"><svg style="width:32px;height:32px;--frost:#f0b27a;--liner:#d35400;--top:#a04000"><use href="#cupcake"/></svg></div><div style="flex:1"><b style="font-size:13.5px;color:var(--muted)">Abóbora com Especiarias</b><div class="sub">R$ 11,50 · estoque 0 · inativo</div></div><span class="toggle off"></span><svg class="i p" style="color:var(--muted)"><use href="#i-edit"/></svg></div>
+      <div class="lin"><div class="thumb" style="width:40px;height:40px;background:#f6f7dc"><svg style="width:32px;height:32px;--frost:#fbf6d0;--liner:#cddc39;--top:#9bb52a"><use href="#cupcake"/></svg></div><div style="flex:1"><b style="font-size:13.5px">Limão Siciliano</b><div class="sub">R$ 10,90 · estoque 30</div></div><span class="toggle"></span><svg class="i p" style="color:var(--muted)"><use href="#i-edit"/></svg></div>
+    </div>
+    <p class="ajuda">A chave liga ou desliga o cupcake na vitrine. Para mudar estoque e preço, toque no lápis.</p>
+  </div>
+</div><figcaption><b>T16 · Cupcakes (loja)</b> — US16 (CA16.2, CA16.3). Esgotados destacados; ativar e inativar direto na lista.</figcaption></figure>
+
+<!-- T17 Admin formulário -->
+<figure id="t17"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Editar cupcake</h1></div>
+  <div class="conteudo" style="gap:9px">
+    <div class="campo"><label>Nome</label><div class="input">Pistache</div></div>
+    <div class="campo"><label>Descrição</label><div class="input" style="height:54px;align-items:flex-start;padding-top:9px;font-size:13px">Massa de pistache com creme de pistache siciliano.</div></div>
+    <div class="campo"><label>Ingredientes</label><div class="input" style="font-size:13px">Farinha, pistache, leite, ovos, manteiga</div></div>
+    <div class="duas"><div class="campo"><label>Preço (R$)</label><div class="input erro">0,00</div><div class="msg-campo"><svg class="i p"><use href="#i-alert"/></svg>Deve ser maior que zero.</div></div><div class="campo"><label>Estoque</label><div class="input foco">12</div></div></div>
+    <div class="campo"><label>Sabor</label><div class="input" style="justify-content:space-between">Castanhas <svg class="i p"><use href="#i-back" transform="rotate(-90 12 12)"/></svg></div></div>
+    <div class="campo"><label>Ocasiões e restrições</label><div class="chips"><span class="chip on">Casamento</span><span class="chip on">Presente</span><span class="chip">Sem glúten</span><span class="chip">Sem lactose</span></div></div>
+    <div class="entre"><span style="font-size:13.5px;font-weight:600">Aceita personalização</span><span class="toggle"></span></div>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Salvar alterações</div></div>
+</div><figcaption><b>T17 · Cadastro e edição de cupcake</b> — US15 (CA15.1, CA15.2). Validação por campo (RN01).</figcaption></figure>
+
+<!-- T18 Nenhum resultado -->
+<figure id="t18"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><div class="marca">Cupcakes Gourmet<small>Feitos no dia, entregues na sua porta</small></div><div class="icone-btn"><svg class="i"><use href="#i-cart"/></svg></div></div>
+  <div class="conteudo">
+    <div class="chips"><span class="chip on">Vegano <svg class="i p" style="width:13px;height:13px"><use href="#i-x"/></svg></span><span class="chip on">Casamento <svg class="i p" style="width:13px;height:13px"><use href="#i-x"/></svg></span></div>
+    <div class="vazio-estado"><div class="circ"><svg class="i" style="color:var(--berry);width:44px;height:44px"><use href="#i-search"/></svg></div>
+      <h2>Nenhum cupcake encontrado com esses filtros</h2><p class="sub">Tente remover algum filtro.</p><div class="btn sec peq">Limpar filtros</div></div>
+  </div>
+  <div class="tabbar"><a class="ativo"><svg class="i"><use href="#i-home"/></svg>Vitrine</a><a><svg class="i"><use href="#i-list"/></svg>Pedidos</a><a><svg class="i"><use href="#i-user"/></svg>Conta</a></div>
+</div><figcaption><b>T18 · Estado vazio: filtros sem resultado</b> — CA02.6.</figcaption></figure>
+
+<!-- T19 Carrinho vazio + remoção com desfazer -->
+<figure id="t19"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Carrinho</h1></div>
+  <div class="conteudo">
+    <div class="vazio-estado"><div class="circ"><svg style="--frost:#fff;--liner:#e9b8c6;--top:#c2185b"><use href="#cupcake"/></svg></div>
+      <h2>Seu carrinho está vazio</h2><p class="sub">Escolha seus cupcakes na vitrine.</p><div class="btn prim peq">Ver cupcakes</div></div>
+  </div>
+  <div class="snackbar">Item removido do carrinho.<b>DESFAZER</b></div>
+  <div class="tabbar"><a class="ativo"><svg class="i"><use href="#i-home"/></svg>Vitrine</a><a><svg class="i"><use href="#i-list"/></svg>Pedidos</a><a><svg class="i"><use href="#i-user"/></svg>Conta</a></div>
+</div><figcaption><b>T19 · Carrinho vazio e "Desfazer"</b> — CA06.3, CA06.4. Ação de remover é reversível.</figcaption></figure>
+
+<!-- T20 Pagamento recusado -->
+<figure id="t20"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Pagamento</h1></div>
+  <div class="conteudo">
+    <div class="aviso warn"><svg class="i p"><use href="#i-info"/></svg>Ambiente de demonstração: nenhuma cobrança real é feita.</div>
+    <div class="aviso err"><svg class="i p"><use href="#i-alert"/></svg><span><b>Pagamento recusado.</b> Tente outro cartão ou pague com Pix. Seu pedido continua reservado.</span></div>
+    <div class="segment"><span>Pix</span><span class="on">Cartão</span></div>
+    <div class="campo"><label>Número do cartão</label><div class="input"><svg class="i p"><use href="#i-card"/></svg>4000 0000 0000 0002</div></div>
+    <div class="campo"><label>Nome impresso no cartão</label><div class="input">ANA P SOUZA</div></div>
+    <div class="duas"><div class="campo"><label>Validade</label><div class="input erro">03/24</div><div class="msg-campo"><svg class="i p"><use href="#i-alert"/></svg>Cartão vencido.</div></div><div class="campo"><label>CVV</label><div class="input">•••</div></div></div>
+  </div>
+  <div class="rodape-acao"><div class="btn prim">Tentar novamente</div></div>
+</div><figcaption><b>T20 · Erros de pagamento</b> — CA08.5, CA08.6. Recusa do gateway e erro de campo, mantendo os dados digitados.</figcaption></figure>
+
+<!-- T21 Confirmação de cancelamento (loja) -->
+<figure id="t21"><div class="phone">
+  <div class="status"><span>9:41</span><span class="sinais"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><span class="bateria"></span></span></div>
+  <div class="appbar"><span class="icone-btn"><svg class="i"><use href="#i-back"/></svg></span><h1>Pedido #000128</h1></div>
+  <div class="conteudo"><div class="caixa" style="height:180px"></div><div class="caixa" style="height:110px"></div></div>
+  <div class="escurece"></div>
+  <div class="dialogo">
+    <h2 style="font-size:17px">Cancelar o pedido #000128?</h2>
+    <p class="sub">O pedido já foi pago. Os 5 itens voltam para o estoque. Esta ação não pode ser desfeita.</p>
+    <div class="duas"><div class="btn sec">Voltar</div><div class="btn" style="background:var(--err);color:#fff">Cancelar pedido</div></div>
+  </div>
+</div><figcaption><b>T21 · Confirmação de ação irreversível</b> — CA17.4, RN16. O diálogo explica a consequência antes de confirmar.</figcaption></figure>
+
+</div>
+<script>
+  const s = new URLSearchParams(location.search).get('s');
+  if (s) {
+    document.body.classList.add('unica');
+    document.querySelectorAll('.galeria figure').forEach(f => { if (f.id !== s) f.remove(); });
+  }
+</script>
+</body>
+</html>
