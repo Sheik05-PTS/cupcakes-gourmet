@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf %}
+{% block classe_app %}largo{% endblock %}
+{% block titulo %}Painel da loja · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  {% block appbar_admin %}
+    <span class="icone-btn" style="color:var(--berry)">{{ icone('store') }}</span>
+    <h1>Painel da loja</h1>
+  {% endblock %}
+  <a class="link" href="{{ url_for('vitrine.index') }}" style="font-size:13px">Ver loja</a>
+  <form method="post" action="{{ url_for('autenticacao.sair') }}">
+    {{ csrf() }}<button class="link" type="submit" style="font-size:13px;margin-left:10px">Sair</button>
+  </form>
+{% endblock %}
+
+{% block conteudo %}
+  {% block navegacao %}
+  <nav class="segment" aria-label="Seções do painel">
+    <a href="{{ url_for('admin.pedidos') }}" class="{{ 'on' if secao == 'pedidos' }}">Pedidos</a>
+    <a href="{{ url_for('admin.cupcakes') }}" class="{{ 'on' if secao == 'cupcakes' }}">Cupcakes</a>
+  </nav>
+  {% endblock %}
+  {% block conteudo_admin %}{% endblock %}
+{% endblock %}
+
+{% block tabbar %}{% endblock %}

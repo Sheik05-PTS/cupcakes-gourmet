@@ -202,3 +202,18 @@ dialog.confirmacao .conteudo { background: var(--card); border-radius: 18px; pad
 .codigo { display: block; width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: #f3edf0;
   border-radius: 8px; padding: 9px 10px; word-break: break-all; color: #4b3d43; text-align: left; }
 svg.i.icone-grande { width: 38px; height: 38px; stroke-width: 2.5; }
+
+/* painel da loja */
+.linha-pedido { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; }
+.linha-pedido:last-child { border-bottom: 0; }
+.linha-pedido.novo { background: var(--rose-soft); margin: 0 -12px; padding: 11px 12px; }
+.toggle { width: 44px; height: 26px; border-radius: 13px; background: var(--berry); position: relative; flex: none; border: 0; cursor: pointer; padding: 0; }
+.toggle::after { content: ""; position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 3px; right: 3px; transition: all .15s; }
+.toggle.off { background: #cfc5c9; }
+.toggle.off::after { right: auto; left: 3px; }
+.toggle-check { appearance: none; -webkit-appearance: none; width: 44px; height: 26px; border-radius: 13px; background: #cfc5c9; position: relative; cursor: pointer; margin: 0; flex: none; transition: background .15s; }
+.toggle-check::after { content: ""; position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left .15s; }
+.toggle-check:checked { background: var(--berry); }
+.toggle-check:checked::after { left: 21px; }
+.chips input[type=checkbox] { position: absolute; opacity: 0; pointer-events: none; }
+.chips input[type=checkbox]:checked + .chip { background: var(--rose); border-color: var(--berry); color: var(--berry-dark); font-weight: 600; }

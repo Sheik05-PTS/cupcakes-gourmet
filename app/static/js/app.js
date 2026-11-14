@@ -101,6 +101,28 @@
     setInterval(tique, 1000);
   });
 
+  // Painel da loja: mostra há quanto tempo atualizou e recarrega quando chega pedido novo (CA17.6)
+  document.querySelectorAll("[data-painel]").forEach((aviso) => {
+    const rotulo = aviso.querySelector("[data-atualizado]");
+    const intervalo = (Number(aviso.dataset.intervalo) || 30) * 1000;
+    let ultimaConsulta = Date.now();
+    setInterval(() => {
+      const s = Math.round((Date.now() - ultimaConsulta) / 1000);
+      rotulo.textContent = s < 5 ? "Atualizado agora" : `Atualizado há ${s} segundos`;
+    }, 1000);
+    setInterval(async () => {
+      try {
+        const resposta = await fetch(aviso.dataset.painel, { headers: { Accept: "application/json" } });
+        if (!resposta.ok) return;
+        const dados = await resposta.json();
+        ultimaConsulta = Date.now();
+        if (dados.ultimo_id !== Number(aviso.dataset.ultimo) || dados.novos !== Number(aviso.dataset.novos)) {
+          window.location.reload();
+        }
+      } catch (e) { /* sem conexão: tenta de novo no próximo ciclo */ }
+    }, intervalo);
+  });
+
   // Acompanhamento do pedido: consulta o status e atualiza a tela quando mudar (CA12.2)
   document.querySelectorAll("[data-acompanhar]").forEach((caixa) => {
     const finais = ["ENTREGUE", "CANCELADO"];

@@ -1,0 +1,31 @@
+{% extends "admin/_base.html" %}
+{% from "_macros.html" import icone, csrf, foto %}
+
+{% block conteudo_admin %}
+  <div class="entre">
+    <span class="sub">{{ cupcakes | length }} cupcakes · {{ esgotados }} {{ 'esgotado' if esgotados == 1 else 'esgotados' }} · {{ inativos }} {{ 'inativo' if inativos == 1 else 'inativos' }}</span>
+    <a class="btn prim peq" href="{{ url_for('admin.novo_cupcake') }}">{{ icone('plus', 'i p') }}Novo</a>
+  </div>
+
+  <div class="caixa" style="gap:0;padding:2px 12px">
+    {% for c in cupcakes %}
+      <div class="linha-pedido" style="cursor:default">
+        <div class="thumb" style="width:44px;height:44px">{{ foto(c) }}</div>
+        <div style="flex:1;min-width:0">
+          <b style="font-size:14px;{{ 'color:var(--muted)' if not c.ativo }}">{{ c.nome }}</b>
+          <div class="sub">{{ c.preco | moeda }} ·
+            {% if c.ativo and c.estoque == 0 %}<span class="pill AGUARDANDO_PAGAMENTO" style="padding:1px 7px">{{ icone('alert') }}Esgotado</span>
+            {% else %}estoque {{ c.estoque }}{% endif %}{% if not c.ativo %} · inativo{% endif %}
+          </div>
+        </div>
+        <form method="post" action="{{ url_for('admin.alternar_ativo', cupcake_id=c.id) }}">
+          {{ csrf() }}
+          <button class="toggle {{ '' if c.ativo else 'off' }}" type="submit" role="switch" aria-checked="{{ 'true' if c.ativo else 'false' }}"
+                  aria-label="{{ 'Tirar' if c.ativo else 'Colocar' }} {{ c.nome }} {{ 'da' if c.ativo else 'na' }} vitrine"></button>
+        </form>
+        <a class="icone-btn" href="{{ url_for('admin.editar_cupcake', cupcake_id=c.id) }}" aria-label="Editar {{ c.nome }}" style="color:var(--muted)">{{ icone('edit', 'i p') }}</a>
+      </div>
+    {% endfor %}
+  </div>
+  <p class="ajuda">A chave liga ou desliga o cupcake na vitrine. Para mudar estoque e preço, toque no lápis.</p>
+{% endblock %}

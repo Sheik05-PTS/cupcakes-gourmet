@@ -10,7 +10,7 @@ Autor: Petterson Teixeira
 | Etapa | Situação |
 |---|---|
 | Situação 1: revisão do planejamento, UML, telas e banco de dados | Concluída; aguardando o feedback dos colegas |
-| Situação 2: desenvolvimento (front-end, back-end MVC e testes) | Em andamento |
+| Situação 2: desenvolvimento (front-end, back-end MVC e testes) | Em andamento: as 16 histórias do MVP funcionam e têm testes automatizados (183 testes, 96% de cobertura); falta publicar e o manual de uso |
 | Situação 3: testes com usuários, correções e laudo de qualidade | Pendente |
 
 O controle completo das exigências da disciplina está em [docs/00-checklist-exigencias.md](docs/00-checklist-exigencias.md).

@@ -173,6 +173,32 @@ class Pedido(db.Model):
         self.registrar(StatusPedido.CANCELADO, responsavel)
         return estava_pago
 
+    # ------------------------------------------------------------ painel da loja
+    @property
+    def novo(self):
+        """CA17.6: pedido pago que a loja ainda não abriu."""
+        return self.status == StatusPedido.PAGO and not self.visto_pelo_admin
+
+    @staticmethod
+    def para_painel(status=None, limite=100):
+        consulta = db.select(Pedido).order_by(Pedido.criado_em.desc(), Pedido.id.desc()).limit(limite)
+        if status:
+            consulta = consulta.where(Pedido.status == status)
+        return db.session.scalars(consulta).all()
+
+    @staticmethod
+    def contagem_por_status():
+        linhas = db.session.execute(db.select(Pedido.status, func.count()).group_by(Pedido.status)).all()
+        return {status: total for status, total in linhas}
+
+    @staticmethod
+    def resumo_novos():
+        """Usado pela atualização automática do painel: quantos novos e o número do mais recente."""
+        novos = db.session.scalar(db.select(func.count()).select_from(Pedido).where(
+            Pedido.status == StatusPedido.PAGO, Pedido.visto_pelo_admin.is_(False)))
+        ultimo = db.session.scalar(db.select(func.max(Pedido.id)))
+        return {"novos": novos or 0, "ultimo_id": ultimo or 0}
+
     @staticmethod
     def do_cliente(pedido_id, usuario):
         """Pedido do próprio cliente, ou None (CA12.4: não mostra pedido de outra pessoa)."""

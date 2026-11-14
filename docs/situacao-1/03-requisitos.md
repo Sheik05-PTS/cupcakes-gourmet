@@ -229,6 +229,6 @@ Preenchida ao longo da Situação 2 (código) e da Situação 3 (testes).
 | US11 | RN08, RN09 | carrinho, checkout | AreaEntrega | `tests/unit/test_utilitarios.py` (rn18) | `tests/integration/test_carrinho.py` (ca11_3); `tests/integration/test_checkout.py` (ca10_3, ca11_2) | Pendente |
 | US12 | RN15 | pedidos | Pedido, HistoricoStatus | `tests/unit/test_regras_pedido.py` (rn15) | `tests/integration/test_pedidos.py` (ca12_1 a ca12_4) | Pendente |
 | US13 | RN06, RN17 | autenticacao, conta, pedidos | Usuario | `tests/unit/test_utilitarios.py` (rn17) | `tests/integration/test_conta.py` (ca13_1 a ca13_6, rn06); `tests/integration/test_pedidos.py` (ca13_7) | Pendente |
-| US15 | RN01, RN10, RN19 | admin_cupcakes | Cupcake | | | Pendente |
-| US16 | RN02 | admin_cupcakes | Cupcake | | | Pendente |
-| US17 | RN15, RN16, RN20 | admin_pedidos | Pedido, HistoricoStatus | | | Pendente |
+| US15 | RN01, RN10, RN19 | admin | Cupcake | — | `tests/integration/test_admin.py` (ca15_1 a ca15_4) | Pendente |
+| US16 | RN02 | admin | Cupcake | `tests/unit/test_regras_catalogo.py` (rn02) | `tests/integration/test_admin.py` (ca16_1 a ca16_3) | Pendente |
+| US17 | RN15, RN16, RN20 | admin | Pedido, HistoricoStatus | `tests/unit/test_regras_pedido.py` (rn15, rn16) | `tests/integration/test_admin.py` (ca17_1 a ca17_6, rn16) | Pendente |

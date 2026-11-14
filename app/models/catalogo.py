@@ -8,7 +8,7 @@ from sqlalchemy import Column, Enum, ForeignKey, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..extensions import db
-from .erros import EstoqueInsuficiente, RegraDeNegocio
+from .erros import EstoqueInsuficiente, RegraDeNegocio, Validador
 
 cupcake_ocasioes = Table(
     "cupcake_ocasioes", db.metadata,
@@ -100,6 +100,60 @@ class Cupcake(db.Model):
         """Cupcake visível na vitrine (ativo), ou None. Inativos não aparecem (RN02)."""
         cupcake = db.session.get(Cupcake, cupcake_id)
         return cupcake if cupcake and cupcake.ativo else None
+
+    # ------------------------------------------------------------ painel da loja
+    def preencher(self, dados, ocasioes_ids, restricoes_ids):
+        """US15 / RN01: valida os campos do formulário e atualiza o cupcake. Levanta ErrosDeValidacao."""
+        v = Validador()
+        nome = (dados.get("nome") or "").strip()
+        descricao = (dados.get("descricao") or "").strip()
+        ingredientes = (dados.get("ingredientes") or "").strip()
+        foto_url = (dados.get("foto_url") or "").strip()
+        preco = FiltrosVitrine._dinheiro(dados.get("preco"))
+        estoque_txt = (dados.get("estoque") or "").strip()
+        sabor = db.session.get(Sabor, int(dados.get("sabor_id"))) if (dados.get("sabor_id") or "").isdigit() else None
+
+        if v.exigir(nome, "nome", "Obrigatório.") and v.exigir(len(nome) <= 80, "nome", "Use no máximo 80 caracteres."):
+            repetido = db.session.scalar(db.select(Cupcake).where(func.lower(Cupcake.nome) == nome.lower(),
+                                                                  Cupcake.id != (self.id or 0)))
+            v.exigir(repetido is None, "nome", "Já existe um cupcake com este nome.")
+        v.exigir(descricao, "descricao", "Obrigatório.")
+        v.exigir(len(descricao) <= 500, "descricao", "Use no máximo 500 caracteres.")
+        v.exigir(ingredientes, "ingredientes", "Obrigatório.")
+        v.exigir(len(ingredientes) <= 500, "ingredientes", "Use no máximo 500 caracteres.")
+        v.exigir(preco is not None and preco > 0, "preco", "Deve ser maior que zero.")
+        v.exigir(preco is None or preco < Decimal("1000000"), "preco", "Valor muito alto.")
+        v.exigir(estoque_txt.isdigit(), "estoque", "Informe um número inteiro maior ou igual a zero.")
+        v.exigir(sabor is not None, "sabor_id", "Escolha o sabor.")
+        v.exigir(not foto_url or (foto_url.startswith(("/", "https://")) and len(foto_url) <= 500),
+                 "foto_url", "Use um endereço que comece com / ou https://.")
+        v.conferir()
+
+        self.nome, self.descricao, self.ingredientes = nome, descricao, ingredientes
+        self.preco = preco.quantize(Decimal("0.01"))
+        self.estoque = int(estoque_txt)
+        self.sabor = sabor
+        self.foto_url = foto_url or None
+        self.personalizavel = dados.get("personalizavel") in ("1", "on", "true")
+        self.ativo = dados.get("ativo") in ("1", "on", "true")
+        self.ocasioes = db.session.scalars(db.select(Ocasiao).where(Ocasiao.id.in_(ocasioes_ids or [0]))).all()
+        self.restricoes = db.session.scalars(
+            db.select(RestricaoAlimentar).where(RestricaoAlimentar.id.in_(restricoes_ids or [0]))).all()
+        return self
+
+    def ja_vendido(self):
+        from .pedido import ItemPedido  # import local: pedido.py depende deste módulo
+        return db.session.scalar(db.select(ItemPedido.id).where(ItemPedido.cupcake_id == self.id).limit(1)) is not None
+
+    def excluir(self):
+        """RN19: cupcake que já foi vendido não pode ser excluído, só inativado."""
+        if self.ja_vendido():
+            raise RegraDeNegocio("Este cupcake já foi vendido. Você pode inativá-lo.")
+        db.session.delete(self)
+
+    @staticmethod
+    def todos_para_painel():
+        return db.session.scalars(db.select(Cupcake).order_by(Cupcake.ativo.desc(), Cupcake.nome)).all()
 
 
 @dataclass

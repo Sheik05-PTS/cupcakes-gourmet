@@ -1,0 +1,41 @@
+{% extends "admin/_base.html" %}
+{% from "_macros.html" import icone %}
+
+{% block conteudo_admin %}
+  <div class="chips" aria-label="Filtrar por status">
+    {% for s in filtros %}
+      {% set total = contagem.get(s, 0) if s else (contagem.values() | sum) %}
+      <a class="chip {{ 'on' if s == filtro }}" href="{{ url_for('admin.pedidos', status=s.value) if s else url_for('admin.pedidos') }}">
+        {{ STATUS_INFO[s][0] if s else 'Todos' }} ({{ total }})
+      </a>
+    {% endfor %}
+  </div>
+
+  <p class="ajuda linha" data-painel="{{ url_for('admin.pedidos_novos') }}" data-ultimo="{{ resumo.ultimo_id }}"
+     data-novos="{{ resumo.novos }}" data-intervalo="{{ config.INTERVALO_ATUALIZACAO_S }}">
+    {{ icone('refresh', 'i p') }}<span data-atualizado>Atualizado agora</span>
+    {% if resumo.novos %}· <b style="color:var(--berry)">{{ resumo.novos }} {{ 'pedido novo' if resumo.novos == 1 else 'pedidos novos' }}</b>{% endif %}
+  </p>
+
+  {% if pedidos %}
+    <div class="caixa" style="gap:0;padding:0 12px">
+      {% for p in pedidos %}
+        <a class="linha-pedido {{ 'novo' if p.novo }}" href="{{ url_for('admin.pedido', pedido_id=p.id) }}">
+          <div style="flex:1;min-width:0">
+            <div class="linha"><b>{{ p.numero }}</b>{% if p.novo %}<span class="pill novo">Novo</span>{% endif %}</div>
+            <div class="sub">{{ p.cliente.nome }} · {{ p.criado_em | data_hora }} · {{ p.total_itens }} {{ 'item' if p.total_itens == 1 else 'itens' }}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="preco">{{ p.total | moeda }}</div>
+            <span class="pill {{ p.status.value }}">{{ icone(STATUS_INFO[p.status][1]) }}{{ p.status_texto }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="vazio-estado">
+      <div class="circ">{{ icone('list') }}</div>
+      <h2>Nenhum pedido {{ 'com este status' if filtro else 'ainda' }}.</h2>
+    </div>
+  {% endif %}
+{% endblock %}

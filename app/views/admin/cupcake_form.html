@@ -1,0 +1,100 @@
+{% extends "admin/_base.html" %}
+{% from "_macros.html" import icone, csrf, erro_campo %}
+{% block titulo %}{{ titulo }} · Painel da loja{% endblock %}
+
+{% block appbar_admin %}
+  <a class="icone-btn" href="{{ url_for('admin.cupcakes') }}" aria-label="Voltar para os cupcakes">{{ icone('back') }}</a>
+  <h1>{{ titulo }}</h1>
+{% endblock %}
+{% block navegacao %}{% endblock %}
+
+{%- macro valor(campo, padrao='') -%}{{ dados.get(campo, '') if dados else padrao }}{%- endmacro -%}
+
+{% block conteudo_admin %}
+  {% set ocasioes_marcadas, restricoes_marcadas, sabor_atual = marcadas.ocasioes, marcadas.restricoes, marcadas.sabor %}
+  {% set foto_atual = valor('foto_url', cupcake.foto_url or '') %}
+
+  <form method="post" id="form-cupcake" novalidate style="display:flex;flex-direction:column;gap:10px">
+    {{ csrf() }}
+    <div class="campo {{ 'com-erro' if erros.nome }}">
+      <label for="nome">Nome</label>
+      <input class="input" id="nome" name="nome" maxlength="80" value="{{ valor('nome', cupcake.nome or '') }}">
+      {{ erro_campo(erros, 'nome') }}
+    </div>
+    <div class="campo {{ 'com-erro' if erros.descricao }}">
+      <label for="descricao">Descrição</label>
+      <textarea class="input" id="descricao" name="descricao" maxlength="500" rows="2">{{ valor('descricao', cupcake.descricao or '') }}</textarea>
+      {{ erro_campo(erros, 'descricao') }}
+    </div>
+    <div class="campo {{ 'com-erro' if erros.ingredientes }}">
+      <label for="ingredientes">Ingredientes</label>
+      <textarea class="input" id="ingredientes" name="ingredientes" maxlength="500" rows="2">{{ valor('ingredientes', cupcake.ingredientes or '') }}</textarea>
+      {{ erro_campo(erros, 'ingredientes') }}
+    </div>
+    <div class="duas">
+      <div class="campo {{ 'com-erro' if erros.preco }}">
+        <label for="preco">Preço (R$)</label>
+        <input class="input" id="preco" name="preco" inputmode="decimal" placeholder="0,00"
+               value="{{ valor('preco', ('%.2f' % cupcake.preco).replace('.', ',') if cupcake.preco is not none else '') }}">
+        {{ erro_campo(erros, 'preco') }}
+      </div>
+      <div class="campo {{ 'com-erro' if erros.estoque }}">
+        <label for="estoque">Estoque</label>
+        <input class="input" id="estoque" name="estoque" inputmode="numeric" value="{{ valor('estoque', cupcake.estoque if cupcake.estoque is not none else 0) }}">
+        {{ erro_campo(erros, 'estoque') }}
+      </div>
+    </div>
+    <div class="campo {{ 'com-erro' if erros.sabor_id }}">
+      <label for="sabor_id">Sabor</label>
+      <select class="input" id="sabor_id" name="sabor_id">
+        <option value="">Escolha…</option>
+        {% for s in sabores %}<option value="{{ s.id }}" {{ 'selected' if s.id == sabor_atual }}>{{ s.nome }}</option>{% endfor %}
+      </select>
+      {{ erro_campo(erros, 'sabor_id') }}
+    </div>
+    <fieldset class="campo" style="border:0;padding:0;margin:0">
+      <legend class="rotulo">Ocasiões</legend>
+      <div class="chips">
+        {% for o in ocasioes %}<label><input type="checkbox" name="ocasioes" value="{{ o.id }}" {{ 'checked' if o.id in ocasioes_marcadas }}><span class="chip">{{ o.nome }}</span></label>{% endfor %}
+      </div>
+    </fieldset>
+    <fieldset class="campo" style="border:0;padding:0;margin:0">
+      <legend class="rotulo">Restrições alimentares atendidas</legend>
+      <div class="chips">
+        {% for r in restricoes %}<label><input type="checkbox" name="restricoes" value="{{ r.id }}" {{ 'checked' if r.id in restricoes_marcadas }}><span class="chip">{{ r.nome }}</span></label>{% endfor %}
+      </div>
+    </fieldset>
+    <div class="campo {{ 'com-erro' if erros.foto_url }}">
+      <label for="foto_url">Foto</label>
+      <select class="input" id="foto_url" name="foto_url">
+        <option value="">Ilustração padrão</option>
+        {% for img in imagens %}<option value="{{ img }}" {{ 'selected' if img == foto_atual }}>{{ img.split('/')[-1].replace('.svg', '').replace('-', ' ') | capitalize }}</option>{% endfor %}
+        {% if foto_atual and foto_atual not in imagens %}<option value="{{ foto_atual }}" selected>{{ foto_atual }}</option>{% endif %}
+      </select>
+      <span class="ajuda">No MVP as fotos são ilustrações. O envio de fotos reais fica para uma próxima versão.</span>
+      {{ erro_campo(erros, 'foto_url') }}
+    </div>
+    <label class="entre" style="font-size:14px;font-weight:600">Aceita personalização
+      <input type="checkbox" name="personalizavel" value="1" class="toggle-check" {{ 'checked' if (dados.get('personalizavel') if dados else cupcake.personalizavel) }}>
+    </label>
+    <label class="entre" style="font-size:14px;font-weight:600">Aparece na vitrine
+      <input type="checkbox" name="ativo" value="1" class="toggle-check" {{ 'checked' if (dados.get('ativo') if dados else cupcake.ativo) }}>
+    </label>
+  </form>
+
+  {% if cupcake.id %}
+    <button class="link" type="button" data-abrir="confirmar-exclusao" style="color:var(--err);align-self:flex-start">Excluir cupcake</button>
+    <dialog class="confirmacao" id="confirmar-exclusao" aria-labelledby="titulo-excluir">
+      <form class="conteudo" method="post" action="{{ url_for('admin.excluir_cupcake', cupcake_id=cupcake.id) }}">
+        {{ csrf() }}
+        <h2 id="titulo-excluir" style="font-size:17px">Excluir o cupcake {{ cupcake.nome }}?</h2>
+        <p class="sub">Ele sai do cardápio definitivamente. Se já foi vendido, não pode ser excluído, só inativado.</p>
+        <div class="duas"><button class="btn sec" type="button" data-fechar>Voltar</button><button class="btn perigo-cheio" type="submit">Excluir</button></div>
+      </form>
+    </dialog>
+  {% endif %}
+{% endblock %}
+
+{% block rodape %}
+  <div class="rodape-acao"><button class="btn prim" type="submit" form="form-cupcake">Salvar</button></div>
+{% endblock %}
