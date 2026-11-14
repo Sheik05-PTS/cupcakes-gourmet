@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf, erro_campo %}
+{% block titulo %}Novo endereço · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  <a class="icone-btn" href="{{ voltar }}" aria-label="Voltar">{{ icone('back') }}</a>
+  <h1>Novo endereço</h1>
+{% endblock %}
+
+{% macro campo(nome, rotulo, extra='', obrigatorio=true) %}
+  <div class="campo {{ 'com-erro' if erros.get(nome) }}">
+    <label for="{{ nome }}">{{ rotulo }}</label>
+    <input class="input" id="{{ nome }}" name="{{ nome }}" value="{{ dados.get(nome, '') }}" {{ extra | safe }}
+           {% if obrigatorio %}required{% endif %} {% if erros.get(nome) %}aria-invalid="true" aria-describedby="erro-{{ nome }}"{% endif %}>
+    {{ erro_campo(erros, nome) }}
+  </div>
+{% endmacro %}
+
+{% block conteudo %}
+  <form method="post" id="form-endereco" novalidate style="display:flex;flex-direction:column;gap:10px">
+    {{ csrf() }}
+    <input type="hidden" name="voltar" value="{{ voltar }}">
+    {{ campo('apelido', 'Identificação (opcional)', 'placeholder="Ex.: Casa, Trabalho" maxlength="30"', false) }}
+    {{ campo('cep', 'CEP', 'inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" data-mascara-cep') }}
+    {{ campo('logradouro', 'Rua / Avenida', 'autocomplete="address-line1"') }}
+    <div class="duas">
+      {{ campo('numero', 'Número', 'maxlength="10"') }}
+      {{ campo('complemento', 'Complemento', 'maxlength="60" autocomplete="address-line2"', false) }}
+    </div>
+    {{ campo('bairro', 'Bairro') }}
+    <div class="duas" style="grid-template-columns:2fr 1fr">
+      {{ campo('cidade', 'Cidade', 'autocomplete="address-level2"') }}
+      <div class="campo {{ 'com-erro' if erros.get('uf') }}">
+        <label for="uf">UF</label>
+        <select class="input" id="uf" name="uf">
+          {% for uf in ufs %}<option {{ 'selected' if dados.get('uf') == uf }}>{{ uf }}</option>{% endfor %}
+        </select>
+        {{ erro_campo(erros, 'uf') }}
+      </div>
+    </div>
+  </form>
+{% endblock %}
+
+{% block rodape %}
+  <div class="rodape-acao"><button class="btn prim" type="submit" form="form-endereco">Salvar endereço</button></div>
+{% endblock %}
+
+{% block tabbar %}{% endblock %}

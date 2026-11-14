@@ -197,3 +197,8 @@ dialog.confirmacao .conteudo { background: var(--card); border-radius: 18px; pad
 @media (min-width: 720px) {
   .app.largo .grade { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* pagamento */
+.codigo { display: block; width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: #f3edf0;
+  border-radius: 8px; padding: 9px 10px; word-break: break-all; color: #4b3d43; text-align: left; }
+svg.i.icone-grande { width: 38px; height: 38px; stroke-width: 2.5; }

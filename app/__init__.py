@@ -30,8 +30,11 @@ def create_app(config=Config):
 
     @app.context_processor
     def contexto_global():
+        from .controllers.acesso import usuario_atual
         from .controllers.carrinho import carrinho_atual
-        return {"qtd_carrinho": carrinho_atual().total_itens(), "aba": None}
+        from .models import STATUS_INFO
+        return {"qtd_carrinho": carrinho_atual().total_itens(), "aba": None, "usuario_logado": usuario_atual(),
+                "STATUS_INFO": STATUS_INFO}
 
     return app
 

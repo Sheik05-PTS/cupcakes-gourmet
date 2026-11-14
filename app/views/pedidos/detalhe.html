@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf %}
+{% block titulo %}Pedido {{ pedido.numero }} · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  <a class="icone-btn" href="{{ url_for('pedidos.lista') }}" aria-label="Voltar para meus pedidos">{{ icone('back') }}</a>
+  <h1>Pedido {{ pedido.numero }}</h1>
+{% endblock %}
+
+{% block conteudo %}
+  {% if pedido.status.value == 'CANCELADO' %}
+    <div class="aviso err">{{ icone('x', 'i p') }}<b>Pedido cancelado.</b></div>
+  {% endif %}
+
+  <div class="caixa" data-acompanhar="{{ url_for('pedidos.status', pedido_id=pedido.id) }}" data-status="{{ pedido.status.value }}"
+       data-intervalo="{{ config.INTERVALO_ATUALIZACAO_S }}">
+    <div class="timeline">
+      {% for etapa in pedido.linha_do_tempo() %}
+        <div class="passo {{ etapa.situacao }}">
+          <div class="marco">{{ icone(etapa.icone, 'i p') }}</div>
+          <div class="txt"><b>{{ etapa.texto }}</b>
+            {% if etapa.quando %}<span>{{ etapa.quando | data_hora }}{% if etapa.situacao == 'atual' %} · etapa atual{% endif %}</span>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% if pedido.status.value not in ('ENTREGUE', 'CANCELADO') %}
+    <p class="ajuda linha">{{ icone('refresh', 'i p') }}Esta tela se atualiza sozinha.</p>
+  {% endif %}
+
+  {% if pedido.status.value == 'AGUARDANDO_PAGAMENTO' %}
+    {% set ultimo = pedido.pagamentos[-1] if pedido.pagamentos else None %}
+    {% if ultimo and ultimo.status.value == 'RECUSADO' %}
+      <div class="aviso err">{{ icone('alert', 'i p') }}A última tentativa de pagamento foi recusada.</div>
+    {% endif %}
+    <a class="btn prim" href="{{ url_for('pagamento.index', pedido_id=pedido.id) }}">Pagar agora</a>
+  {% endif %}
+
+  <div class="caixa">
+    {% for item in pedido.itens %}
+      <div>
+        <div class="entre"><span style="font-size:14px">{{ item.quantidade }} × {{ item.cupcake.nome }}</span><span>{{ item.subtotal | moeda }}</span></div>
+        {% if item.personalizacao %}<div class="sub">{{ item.personalizacao }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="sep"></div>
+    {% if pedido.desconto %}<div class="entre sub"><span>Desconto{% if pedido.cupom %} {{ pedido.cupom.codigo }}{% endif %}</span><span>− {{ pedido.desconto | moeda }}</span></div>{% endif %}
+    <div class="entre sub"><span>Frete</span><span>{{ pedido.frete | moeda }}</span></div>
+    <div class="entre"><b>Total</b><b>{{ pedido.total | moeda }}</b></div>
+  </div>
+
+  <div class="caixa">
+    <div class="linha">{{ icone('pin', 'i p') }}<span style="font-size:14px">{{ pedido.endereco_formatado() }}</span></div>
+    {% set pago = pedido.pagamento_aprovado() %}
+    {% if pago %}<div class="linha">{{ icone('card', 'i p') }}<span style="font-size:14px">{{ pago.descricao() }}</span></div>{% endif %}
+  </div>
+{% endblock %}

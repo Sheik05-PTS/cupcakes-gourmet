@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf %}
+{% block titulo %}Minha conta · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}<h1 style="padding-left:6px">Minha conta</h1>{% endblock %}
+
+{% block conteudo %}
+  <div class="caixa">
+    <b style="font-size:16px">{{ usuario.nome }}</b>
+    <span class="sub">{{ usuario.email }}</span>
+    <span class="sub">({{ usuario.telefone[:2] }}) {{ usuario.telefone[2:-4] }}-{{ usuario.telefone[-4:] }}</span>
+  </div>
+
+  <div class="entre"><h2>Endereços</h2><a class="link" href="{{ url_for('conta.novo_endereco') }}">+ Novo endereço</a></div>
+  {% for e in usuario.enderecos %}
+    <div class="caixa" style="flex-direction:row;align-items:flex-start;gap:10px">
+      {{ icone('pin', 'i p') }}
+      <div style="flex:1">
+        {% if e.apelido %}<b style="font-size:14px">{{ e.apelido }}</b>{% endif %}
+        <div class="sub">{{ e.formatado() }} · {{ e.cidade }}/{{ e.uf }}</div>
+      </div>
+      <button class="icone-btn" type="button" data-abrir="excluir-{{ e.id }}" aria-label="Excluir endereço" style="color:var(--muted)">{{ icone('trash', 'i p') }}</button>
+      <dialog class="confirmacao" id="excluir-{{ e.id }}" aria-labelledby="titulo-excluir-{{ e.id }}">
+        <form class="conteudo" method="post" action="{{ url_for('conta.excluir_endereco', endereco_id=e.id) }}">
+          {{ csrf() }}
+          <h2 id="titulo-excluir-{{ e.id }}">Excluir este endereço?</h2>
+          <p class="sub">Pedidos já feitos não são alterados.</p>
+          <div class="duas"><button class="btn sec" type="button" data-fechar>Voltar</button><button class="btn perigo-cheio" type="submit">Excluir</button></div>
+        </form>
+      </dialog>
+    </div>
+  {% else %}
+    <p class="sub">Você ainda não cadastrou endereços.</p>
+  {% endfor %}
+
+  <a class="btn sec" href="{{ url_for('pedidos.lista') }}">{{ icone('list', 'i p') }}Meus pedidos</a>
+  <form method="post" action="{{ url_for('autenticacao.sair') }}">
+    {{ csrf() }}
+    <button class="btn perigo" type="submit">Sair</button>
+  </form>
+{% endblock %}

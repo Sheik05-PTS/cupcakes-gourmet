@@ -1,5 +1,8 @@
 """Filtros de template para exibir valores no padrão brasileiro."""
 from decimal import Decimal
+from zoneinfo import ZoneInfo
+
+FUSO = ZoneInfo("America/Sao_Paulo")
 
 
 def moeda(valor):
@@ -10,8 +13,16 @@ def moeda(valor):
     return "R$ " + texto.replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+def no_fuso(valor):
+    return valor.astimezone(FUSO) if valor and valor.tzinfo else valor
+
+
 def data_hora(valor):
-    return valor.strftime("%d/%m/%Y %H:%M") if valor else ""
+    return no_fuso(valor).strftime("%d/%m/%Y %H:%M") if valor else ""
+
+
+def hora(valor):
+    return no_fuso(valor).strftime("%H:%M") if valor else ""
 
 
 def numero_pedido(pedido_id):
@@ -26,5 +37,6 @@ def cep(valor):
 def registrar(app):
     app.add_template_filter(moeda)
     app.add_template_filter(data_hora)
+    app.add_template_filter(hora)
     app.add_template_filter(numero_pedido)
     app.add_template_filter(cep)

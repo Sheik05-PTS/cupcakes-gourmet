@@ -222,13 +222,13 @@ Preenchida ao longo da Situação 2 (código) e da Situação 3 (testes).
 | US04 | RN03, RN05, RN06 | carrinho | Carrinho, Cupcake | `tests/unit/test_regras_catalogo.py` (rn03, rn05) | `tests/integration/test_carrinho.py` (ca04_1 a ca04_4) | Pendente |
 | US05 | RN04, RN05 | carrinho | Carrinho, OpcaoPersonalizacao | `tests/unit/test_regras_catalogo.py` (rn04) | `tests/integration/test_vitrine.py` (ca05_1, ca05_4); `tests/integration/test_carrinho.py` (ca05_2 a ca05_5) | Pendente |
 | US06 | RN03 | carrinho | Carrinho | `tests/unit/test_regras_catalogo.py` (carrinho) | `tests/integration/test_carrinho.py` (ca06_1 a ca06_4) | Pendente |
-| US07 | RN07, RN09 | checkout | Cupom | | | Pendente |
-| US08 | RN11–RN14, RN21 | pagamento | Pagamento, GatewaySimulado | | | Pendente |
-| US09 | RN10 | pagamento | Pedido | | | Pendente |
-| US10 | RN18 | conta | Endereco | | | Pendente |
-| US11 | RN08, RN09 | carrinho, checkout | AreaEntrega | `tests/unit/test_utilitarios.py` (rn18) | `tests/integration/test_carrinho.py` (ca11_3); checkout pendente | Pendente |
-| US12 | RN15 | pedidos | Pedido, HistoricoStatus | | | Pendente |
-| US13 | RN06, RN17 | autenticacao | Usuario | | | Pendente |
+| US07 | RN07, RN09 | checkout | Cupom | `tests/unit/test_regras_pedido.py` (ca07) | `tests/integration/test_checkout.py` (ca07_1 a ca07_4) | Pendente |
+| US08 | RN11–RN14, RN21 | pagamento | Pagamento, GatewaySimulado, ServicoPagamento | `tests/unit/test_regras_pedido.py` (ca08, rn11, rn12) | `tests/integration/test_pagamento.py` (ca08_1 a ca08_8, rn14, rnf07) | Pendente |
+| US09 | RN10 | pagamento | Pedido | — | `tests/integration/test_pagamento.py` (ca09_1, ca09_3) | Pendente |
+| US10 | RN18 | conta, checkout | Endereco | `tests/unit/test_utilitarios.py` (rn18) | `tests/integration/test_conta.py` (ca10_1, ca10_2); `tests/integration/test_checkout.py` (ca10_3) | Pendente |
+| US11 | RN08, RN09 | carrinho, checkout | AreaEntrega | `tests/unit/test_utilitarios.py` (rn18) | `tests/integration/test_carrinho.py` (ca11_3); `tests/integration/test_checkout.py` (ca10_3, ca11_2) | Pendente |
+| US12 | RN15 | pedidos | Pedido, HistoricoStatus | `tests/unit/test_regras_pedido.py` (rn15) | `tests/integration/test_pedidos.py` (ca12_1 a ca12_4) | Pendente |
+| US13 | RN06, RN17 | autenticacao, conta, pedidos | Usuario | `tests/unit/test_utilitarios.py` (rn17) | `tests/integration/test_conta.py` (ca13_1 a ca13_6, rn06); `tests/integration/test_pedidos.py` (ca13_7) | Pendente |
 | US15 | RN01, RN10, RN19 | admin_cupcakes | Cupcake | | | Pendente |
 | US16 | RN02 | admin_cupcakes | Cupcake | | | Pendente |
 | US17 | RN15, RN16, RN20 | admin_pedidos | Pedido, HistoricoStatus | | | Pendente |

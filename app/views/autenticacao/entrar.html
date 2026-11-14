@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf %}
+{% block titulo %}Entrar · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  <a class="icone-btn" href="{{ url_for('carrinho.ver') if veio_do_checkout else url_for('vitrine.index') }}" aria-label="Voltar">{{ icone('back') }}</a>
+  <h1>Entrar</h1>
+{% endblock %}
+
+{% block conteudo %}
+  {% if veio_do_checkout %}
+    <div class="aviso info">{{ icone('cart', 'i p') }}Entre para finalizar o pedido. Seu carrinho continua salvo.</div>
+  {% endif %}
+  {% if erro %}
+    <div class="aviso err" role="alert">{{ icone('alert', 'i p') }}{{ erro }}</div>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('autenticacao.entrar') }}" class="caixa" style="gap:14px" novalidate>
+    {{ csrf() }}
+    <input type="hidden" name="proximo" value="{{ proximo }}">
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input class="input" id="email" name="email" type="email" autocomplete="email" value="{{ email }}" required>
+    </div>
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input class="input" id="senha" name="senha" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="btn prim" type="submit">Entrar</button>
+  </form>
+
+  <p class="centro">Ainda não tem conta?
+    <a class="link" href="{{ url_for('autenticacao.criar_conta', proximo=proximo) if proximo else url_for('autenticacao.criar_conta') }}">Criar conta</a>
+  </p>
+{% endblock %}
+
+{% block tabbar %}{% endblock %}

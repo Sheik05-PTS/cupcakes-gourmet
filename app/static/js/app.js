@@ -65,11 +65,54 @@
     campo.addEventListener("change", () => campo.form.requestSubmit());
   });
 
-  // Máscara simples de CEP: 00000-000
-  document.querySelectorAll("[data-mascara-cep]").forEach((campo) => {
-    campo.addEventListener("input", () => {
-      const d = campo.value.replace(/\D/g, "").slice(0, 8);
-      campo.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+  // Máscaras simples de digitação
+  const mascara = (seletor, formatar) => {
+    document.querySelectorAll(seletor).forEach((campo) => {
+      campo.addEventListener("input", () => { campo.value = formatar(campo.value.replace(/\D/g, "")); });
     });
+  };
+  mascara("[data-mascara-cep]", (d) => { d = d.slice(0, 8); return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; });
+  mascara("[data-mascara-cartao]", (d) => d.slice(0, 19).replace(/(\d{4})(?=\d)/g, "$1 "));
+  mascara("[data-mascara-validade]", (d) => { d = d.slice(0, 4); return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d; });
+  mascara("[data-mascara-telefone]", (d) => {
+    d = d.slice(0, 11);
+    if (d.length <= 2) return d.length ? `(${d}` : "";
+    if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  });
+
+  // Copiar o código Pix
+  document.querySelectorAll("[data-copiar]").forEach((botao) => {
+    botao.addEventListener("click", async () => {
+      const texto = document.getElementById(botao.dataset.copiar).textContent.trim();
+      try { await navigator.clipboard.writeText(texto); botao.lastChild.textContent = "Copiado!"; } catch (e) { /* sem permissão */ }
+    });
+  });
+
+  // Contagem regressiva do Pix (RN11); ao zerar, recarrega para oferecer um novo código
+  document.querySelectorAll("[data-contagem]").forEach((alvo) => {
+    let restante = Number(alvo.dataset.contagem);
+    const tique = () => {
+      restante -= 1;
+      if (restante <= 0) { window.location.reload(); return; }
+      alvo.textContent = `${String(Math.floor(restante / 60)).padStart(2, "0")}:${String(restante % 60).padStart(2, "0")}`;
+    };
+    setInterval(tique, 1000);
+  });
+
+  // Acompanhamento do pedido: consulta o status e atualiza a tela quando mudar (CA12.2)
+  document.querySelectorAll("[data-acompanhar]").forEach((caixa) => {
+    const finais = ["ENTREGUE", "CANCELADO"];
+    if (finais.includes(caixa.dataset.status)) return;
+    const intervalo = (Number(caixa.dataset.intervalo) || 30) * 1000;
+    setInterval(async () => {
+      try {
+        const resposta = await fetch(caixa.dataset.acompanhar, { headers: { Accept: "application/json" } });
+        if (!resposta.ok) return;
+        const dados = await resposta.json();
+        if (dados.status !== caixa.dataset.status) window.location.reload();
+      } catch (e) { /* sem conexão: tenta de novo no próximo ciclo */ }
+    }, intervalo);
   });
 })();

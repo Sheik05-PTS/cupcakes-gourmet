@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone %}
+{% block titulo %}Pedido confirmado · Cupcakes Gourmet{% endblock %}
+{% block appbar %}<h1 style="padding-left:6px">Pedido {{ pedido.numero }}</h1>{% endblock %}
+
+{% block conteudo %}
+  {% set pagamento = pedido.pagamento_aprovado() %}
+  <div class="centro" style="display:grid;place-items:center;gap:10px;padding-top:10px">
+    <div style="width:72px;height:72px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center">
+      {{ icone('check', 'i icone-grande') }}
+    </div>
+    <h2 style="font-size:22px">Pedido confirmado!</h2>
+    <p class="sub">Pedido <b style="color:var(--ink)">{{ pedido.numero }}</b> · pago com {% if pagamento.metodo.value == 'CARTAO' %}cartão {{ pagamento.cartao_bandeira }} final {{ pagamento.cartao_final }}{% else %}Pix{% endif %}</p>
+  </div>
+
+  <div class="caixa">
+    {% for item in pedido.itens %}
+      <div class="entre"><span style="font-size:14px">{{ item.quantidade }} × {{ item.cupcake.nome }}{% if item.personalizacao %} <span class="sub">(personalizado)</span>{% endif %}</span><span>{{ item.subtotal | moeda }}</span></div>
+    {% endfor %}
+    <div class="sep"></div>
+    {% if pedido.desconto %}<div class="entre sub"><span>Desconto{% if pedido.cupom %} {{ pedido.cupom.codigo }}{% endif %}</span><span>− {{ pedido.desconto | moeda }}</span></div>{% endif %}
+    <div class="entre sub"><span>Frete</span><span>{{ pedido.frete | moeda }}</span></div>
+    <div class="entre"><b>Total pago</b><b>{{ pedido.total | moeda }}</b></div>
+  </div>
+
+  <div class="caixa">
+    <div class="linha">{{ icone('pin', 'i p') }}<span style="font-size:14px">{{ pedido.endereco_formatado() }}</span></div>
+    <div class="linha">{{ icone('clock', 'i p') }}<span style="font-size:14px">Previsão de entrega: {{ pedido.prazo_texto() }}</span></div>
+  </div>
+{% endblock %}
+
+{% block rodape %}
+  <div class="rodape-acao">
+    <a class="btn prim" href="{{ url_for('pedidos.detalhe', pedido_id=pedido.id) }}">Acompanhar pedido</a>
+    <a class="btn sec" href="{{ url_for('vitrine.index') }}">Voltar à vitrine</a>
+  </div>
+{% endblock %}
+
+{% block tabbar %}{% endblock %}

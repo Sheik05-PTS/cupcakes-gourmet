@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf, erro_campo %}
+{% block titulo %}Pagamento · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  <a class="icone-btn" href="{{ url_for('pedidos.detalhe', pedido_id=pedido.id) }}" aria-label="Voltar">{{ icone('back') }}</a>
+  <h1>Pagamento</h1>
+{% endblock %}
+
+{% block conteudo %}
+  <div class="aviso warn">{{ icone('info', 'i p') }}Ambiente de demonstração: nenhuma cobrança real é feita.</div>
+  {% if erro_geral %}
+    <div class="aviso err" role="alert">{{ icone('alert', 'i p') }}<span><b>{{ erro_geral.split('.')[0] }}.</b>{{ erro_geral[erro_geral.index('.') + 1:] }} Seu pedido continua reservado.</span></div>
+  {% endif %}
+
+  <div class="entre"><span class="sub">Pedido {{ pedido.numero }}</span><span class="preco" style="font-size:19px">{{ pedido.total | moeda }}</span></div>
+
+  <nav class="segment" aria-label="Forma de pagamento">
+    <a href="{{ url_for('pagamento.index', pedido_id=pedido.id, metodo='pix') }}" class="{{ 'on' if metodo == 'pix' }}">Pix</a>
+    <a href="{{ url_for('pagamento.index', pedido_id=pedido.id, metodo='cartao') }}" class="{{ 'on' if metodo != 'pix' }}">Cartão</a>
+  </nav>
+
+  {% if metodo == 'pix' %}
+    {% if pix and restante > 0 %}
+      <div class="caixa centro" style="align-items:center">
+        <img src="{{ url_for('static', filename='img/pix-demo.svg') }}" alt="QR Code de demonstração" width="168" height="168">
+        <p class="sub">Código "copia e cola" fictício:</p>
+        <code class="codigo" id="codigo-pix">{{ pix.pix_codigo }}</code>
+        <div class="entre" style="width:100%">
+          <button class="btn sec peq" type="button" data-copiar="codigo-pix">{{ icone('copy', 'i p') }}Copiar código</button>
+          <span class="linha sub">{{ icone('clock', 'i p') }}Expira em <b style="color:var(--ink)" data-contagem="{{ restante }}">{{ '%02d:%02d' % (restante // 60, restante % 60) }}</b></span>
+        </div>
+      </div>
+    {% else %}
+      <div class="caixa">
+        <p>Gere um código Pix válido por {{ config.PIX_VALIDADE_MINUTOS }} minutos. Depois, toque em "Simular pagamento".</p>
+      </div>
+    {% endif %}
+  {% else %}
+    <form method="post" action="{{ url_for('pagamento.pagar_cartao', pedido_id=pedido.id) }}" id="form-cartao" novalidate
+          style="display:flex;flex-direction:column;gap:10px" autocomplete="off">
+      {{ csrf() }}
+      <div class="campo {{ 'com-erro' if erros.numero }}">
+        <label for="numero">Número do cartão</label>
+        <input class="input" id="numero" name="numero" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="23"
+               value="{{ dados.get('numero', '') }}" data-mascara-cartao {% if erros.numero %}aria-invalid="true" aria-describedby="erro-numero"{% endif %}>
+        {{ erro_campo(erros, 'numero') }}
+      </div>
+      <div class="campo {{ 'com-erro' if erros.nome }}">
+        <label for="nome">Nome impresso no cartão</label>
+        <input class="input" id="nome" name="nome" value="{{ dados.get('nome', '') }}" style="text-transform:uppercase"
+               {% if erros.nome %}aria-invalid="true" aria-describedby="erro-nome"{% endif %}>
+        {{ erro_campo(erros, 'nome') }}
+      </div>
+      <div class="duas">
+        <div class="campo {{ 'com-erro' if erros.validade }}">
+          <label for="validade">Validade</label>
+          <input class="input" id="validade" name="validade" inputmode="numeric" placeholder="MM/AA" maxlength="7"
+                 value="{{ dados.get('validade', '') }}" data-mascara-validade {% if erros.validade %}aria-invalid="true" aria-describedby="erro-validade"{% endif %}>
+          {{ erro_campo(erros, 'validade') }}
+        </div>
+        <div class="campo {{ 'com-erro' if erros.cvv }}">
+          <label for="cvv">CVV</label>
+          <input class="input" id="cvv" name="cvv" inputmode="numeric" maxlength="4" type="password"
+                 {% if erros.cvv %}aria-invalid="true" aria-describedby="erro-cvv"{% endif %}>
+          {{ erro_campo(erros, 'cvv') }}
+        </div>
+      </div>
+      <p class="ajuda linha">{{ icone('lock', 'i p') }}Não guardamos o número nem o CVV do seu cartão.</p>
+    </form>
+  {% endif %}
+{% endblock %}
+
+{% block rodape %}
+  <div class="rodape-acao">
+    {% if metodo == 'pix' %}
+      {% if pix and restante > 0 %}
+        <form method="post" action="{{ url_for('pagamento.confirmar_pix', pagamento_id=pix.id) }}">
+          {{ csrf() }}<button class="btn prim" type="submit">Simular pagamento</button>
+        </form>
+      {% else %}
+        <form method="post" action="{{ url_for('pagamento.gerar_pix', pedido_id=pedido.id) }}">
+          {{ csrf() }}<button class="btn prim" type="submit">Gerar código Pix</button>
+        </form>
+      {% endif %}
+    {% else %}
+      <button class="btn prim" type="submit" form="form-cartao">{{ 'Tentar novamente' if erro_geral else 'Pagar ' ~ (pedido.total | moeda) }}</button>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block tabbar %}{% endblock %}

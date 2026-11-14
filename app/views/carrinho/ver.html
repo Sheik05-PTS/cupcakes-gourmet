@@ -76,7 +76,7 @@
       {% if linhas | selectattr('indisponivel') | list %}
         <button class="btn" disabled>Ajuste os itens indisponíveis</button>
       {% else %}
-        <a class="btn prim" href="/checkout">Finalizar pedido</a>
+        <a class="btn prim" href="{{ url_for('checkout.index') }}">Finalizar pedido</a>
       {% endif %}
     </div>
   {% endif %}

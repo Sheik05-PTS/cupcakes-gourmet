@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone %}
+{% block titulo %}Meus pedidos · Cupcakes Gourmet{% endblock %}
+{% block appbar %}<h1 style="padding-left:6px">Meus pedidos</h1>{% endblock %}
+
+{% block conteudo %}
+  {% for p in pedidos %}
+    <a class="caixa" href="{{ url_for('pedidos.detalhe', pedido_id=p.id) }}" style="text-decoration:none">
+      <div class="entre">
+        <b>{{ p.numero }}</b>
+        <span class="pill {{ p.status.value }}">{{ icone(STATUS_INFO[p.status][1]) }}{{ p.status_texto }}</span>
+      </div>
+      <div class="entre sub"><span>{{ p.criado_em | data_hora }} · {{ p.total_itens }} {{ 'item' if p.total_itens == 1 else 'itens' }}</span>
+        <span class="preco" style="color:var(--ink)">{{ p.total | moeda }}</span></div>
+    </a>
+  {% else %}
+    <div class="vazio-estado">
+      <div class="circ">{{ icone('list') }}</div>
+      <h2>Você ainda não fez pedidos.</h2>
+      <a class="btn prim peq" href="{{ url_for('vitrine.index') }}">Ver cupcakes</a>
+    </div>
+  {% endfor %}
+{% endblock %}

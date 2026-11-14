@@ -32,8 +32,8 @@
   {%- block tabbar -%}
   <nav class="tabbar" aria-label="Navegação principal">
     <a href="{{ url_for('vitrine.index') }}" class="{{ 'ativo' if aba == 'vitrine' }}">{{ icone('home') }}Vitrine</a>
-    <a href="/pedidos" class="{{ 'ativo' if aba == 'pedidos' }}">{{ icone('list') }}Pedidos</a>
-    <a href="/conta" class="{{ 'ativo' if aba == 'conta' }}">{{ icone('user') }}Conta</a>
+    <a href="{{ url_for('pedidos.lista') }}" class="{{ 'ativo' if aba == 'pedidos' }}">{{ icone('list') }}Pedidos</a>
+    <a href="{{ url_for('conta.index') }}" class="{{ 'ativo' if aba == 'conta' }}">{{ icone('user') }}Conta</a>
   </nav>
   {%- endblock -%}
 </div>

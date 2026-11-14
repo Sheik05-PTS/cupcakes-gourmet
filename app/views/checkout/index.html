@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf %}
+{% block titulo %}Finalizar pedido · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  <a class="icone-btn" href="{{ url_for('carrinho.ver') }}" aria-label="Voltar para o carrinho">{{ icone('back') }}</a>
+  <h1>Finalizar pedido</h1>
+{% endblock %}
+
+{% block conteudo %}
+  {% for l in indisponiveis %}
+    <div class="aviso err">{{ icone('alert', 'i p') }}{{ l.cupcake.nome }} ficou indisponível. <a class="link" href="{{ url_for('carrinho.ver') }}">Ajustar carrinho</a></div>
+  {% endfor %}
+
+  <h2>Entregar em</h2>
+  {% if enderecos %}
+    <form method="get" action="{{ url_for('checkout.index') }}" style="display:flex;flex-direction:column;gap:8px" id="form-endereco">
+      {% for e in enderecos %}
+        <label class="radio">
+          <input type="radio" name="endereco_id" value="{{ e.id }}" {{ 'checked' if escolhido and e.id == escolhido.id }} data-enviar-ao-mudar>
+          <span><b style="font-size:14px">{{ e.apelido or 'Endereço' }}</b><span class="sub" style="display:block">{{ e.formatado() }}</span></span>
+        </label>
+      {% endfor %}
+      <noscript><button class="btn sec peq" type="submit">Usar este endereço</button></noscript>
+    </form>
+  {% else %}
+    <div class="aviso info">{{ icone('pin', 'i p') }}Cadastre o endereço de entrega para continuar.</div>
+  {% endif %}
+  <a class="link" href="{{ url_for('conta.novo_endereco', voltar=url_for('checkout.index')) }}">+ Novo endereço</a>
+
+  {% if erro_entrega %}
+    <div class="aviso err">{{ icone('alert', 'i p') }}{{ erro_entrega }}</div>
+  {% elif resumo.area %}
+    <div class="aviso ok">{{ icone('truck', 'i p') }}Frete {{ resumo.frete | moeda }} · entrega {{ resumo.area.prazo_texto() }}</div>
+  {% endif %}
+
+  {% if resumo.cupom %}
+    <div class="campo">
+      <span class="rotulo">Cupom de desconto</span>
+      <form class="linha" method="post" action="{{ url_for('checkout.remover_cupom') }}">
+        {{ csrf() }}
+        <div class="input" style="flex:1;display:flex;align-items:center;gap:8px">{{ icone('tag', 'i p') }}{{ resumo.cupom.codigo }}</div>
+        <button class="btn sec peq" type="submit">Remover</button>
+      </form>
+      <span class="ajuda" style="color:var(--ok)">Cupom aplicado: {{ resumo.cupom.descricao() }}.</span>
+    </div>
+  {% else %}
+    <form class="campo" method="post" action="{{ url_for('checkout.aplicar_cupom') }}">
+      {{ csrf() }}
+      <label for="codigo">Cupom de desconto</label>
+      <div class="linha">
+        <input class="input" id="codigo" name="codigo" autocapitalize="characters" placeholder="Digite o código" style="flex:1;text-transform:uppercase">
+        <button class="btn sec peq" type="submit">Aplicar</button>
+      </div>
+      {% if erro_cupom %}<span class="msg-campo">{{ icone('alert', 'i p') }}{{ erro_cupom }}</span>{% endif %}
+    </form>
+  {% endif %}
+
+  <div class="caixa resumo" style="gap:0">
+    <div><span>Subtotal ({{ qtd_itens }} {{ 'item' if qtd_itens == 1 else 'itens' }})</span><span>{{ resumo.subtotal | moeda }}</span></div>
+    {% if resumo.cupom %}<div class="desconto"><span>Desconto {{ resumo.cupom.codigo }}</span><span>− {{ resumo.desconto | moeda }}</span></div>{% endif %}
+    <div><span>Frete</span><span>{{ resumo.frete | moeda if resumo.area else '—' }}</span></div>
+    <div class="total"><span>Total</span><span>{{ resumo.total | moeda }}</span></div>
+  </div>
+{% endblock %}
+
+{% block rodape %}
+  <form class="rodape-acao" method="post" action="{{ url_for('checkout.confirmar') }}">
+    {{ csrf() }}
+    <input type="hidden" name="endereco_id" value="{{ escolhido.id if escolhido }}">
+    {% if escolhido and resumo.area and not indisponiveis %}
+      <button class="btn prim" type="submit">Ir para o pagamento</button>
+    {% else %}
+      <button class="btn" type="button" disabled>Ir para o pagamento</button>
+    {% endif %}
+  </form>
+{% endblock %}
+
+{% block tabbar %}{% endblock %}
