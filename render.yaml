@@ -1,0 +1,29 @@
+# Publicação no Render (plano gratuito). O banco PostgreSQL fica no Neon.
+# Ao criar o Blueprint, o Render pede os valores marcados com "sync: false".
+services:
+  - type: web
+    name: cupcakes-gourmet
+    runtime: python
+    plan: free
+    region: virginia
+    branch: main
+    autoDeploy: true
+    buildCommand: >-
+      pip install -r requirements.txt &&
+      flask --app wsgi banco criar &&
+      flask --app wsgi criar-admin --email "$ADMIN_EMAIL" --senha "$ADMIN_SENHA" --nome "Equipe Cupcakes Gourmet"
+    startCommand: gunicorn wsgi:app --workers 2 --threads 2 --timeout 60
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.2
+      - key: FLASK_ENV_PRODUCAO
+        value: "1"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        value: loja.teste@example.com
+      - key: ADMIN_SENHA
+        sync: false

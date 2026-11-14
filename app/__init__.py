@@ -6,6 +6,7 @@
 """
 from flask import Flask, render_template
 from werkzeug.exceptions import HTTPException
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from . import cli, formatacao
 from .config import Config
@@ -18,6 +19,10 @@ def create_app(config=Config):
     app.config.from_object(config)
     if not app.config.get("SECRET_KEY") or not app.config.get("SQLALCHEMY_DATABASE_URI"):
         raise RuntimeError("Defina SECRET_KEY e DATABASE_URL (veja o arquivo .env.example).")
+
+    if app.config.get("SESSION_COOKIE_SECURE"):
+        # Em produção o app fica atrás do proxy HTTPS do Render
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
     db.init_app(app)
     csrf.init_app(app)
