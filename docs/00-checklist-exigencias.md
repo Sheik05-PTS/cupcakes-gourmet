@@ -39,13 +39,13 @@ Status: Pendente · Em andamento · Concluído
 | R19 | Projeto físico do banco em SGBD popular (domínios, NOT NULL, chaves, integridade referencial, cardinalidade) | SP1, PF, MT | `database/schema.sql` + `seed.sql`, testado (`dados/04-verificacao-do-banco.md`) | Concluído |
 | R20 | Documentação do banco + dicionário de dados | SP1 | `docs/situacao-1/dados/03-dicionario-de-dados.md` | Concluído |
 | R21 | Pedir crítica da solução a colegas e incorporar as melhores sugestões | PF, MT | `docs/situacao-1/05-feedback-colegas.md` (quem, o quê, decisão) | Em andamento |
-| R22 | Documentação de planejamento versionada no GitHub | PF, FE | Link do repositório (FE: "Documentação") | Pendente |
+| R22 | Documentação de planejamento versionada no GitHub | PF, FE | Link do repositório (FE: "Documentação") | Concluído |
 
 ## Situação 2 — Desenvolvimento
 
 | ID | Exigência | Fonte | Entregável | Status |
 |---|---|---|---|---|
-| R23 | Criar usuário no GitHub e repositório público | SP2 | Conta + repositório | Pendente |
+| R23 | Criar usuário no GitHub e repositório público | SP2 | Conta `Sheik05-PTS` + https://github.com/Sheik05-PTS/cupcakes-gourmet | Concluído |
 | R24 | Front-end em HTML, CSS e JavaScript | SP2 | `app/views`, `app/static` | Pendente |
 | R25 | Back-end com padrão MVC | SP2, MT | `app/models`, `app/controllers` | Pendente |
 | R26 | Linguagem entre Java, PHP, C#/.NET ou Python | SP2 | Definida em `README.md` e no FE | Concluído |
@@ -74,14 +74,14 @@ Status: Pendente · Em andamento · Concluído
 | R44 | Corrigir e melhorar conforme sugestões pertinentes, registrando na documentação | SP3 | Issues/commits vinculados + registro de alterações | Pendente |
 | R45 | Laudo de Qualidade: erros, correções e evidências | FE | `docs/situacao-3/laudo-de-qualidade.md` | Pendente |
 | R46 | Vídeo de **até 5 min** com as modificações feitas | SP3, FE | Link do vídeo (FE: "Vídeo da Solução atualizada") | Pendente |
-| R47 | Estrutura de diretórios no GitHub para todas as situações + código | SP3 | Estrutura abaixo | Pendente |
+| R47 | Estrutura de diretórios no GitHub para todas as situações + código | SP3 | Estrutura abaixo | Em andamento |
 
 ## Entrega final
 
 | ID | Exigência | Fonte | Entregável | Status |
 |---|---|---|---|---|
 | R48 | Formulário PIT_atividade.docx preenchido (nome, RGM, links, tabela, 5 testes, laudo, vídeo) | FE | PIT_atividade.docx | Pendente |
-| R49 | Repositório mantido no GitHub em qualquer situação | PF | Repositório público | Pendente |
+| R49 | Repositório mantido no GitHub em qualquer situação | PF | Repositório público | Em andamento |
 
 ---
 
