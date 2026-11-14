@@ -68,7 +68,7 @@ Status: Pendente · Em andamento · Concluído
 | R38 | Testes de sistema | MT (Modelo V) | `docs/situacao-3/plano-de-testes.md` | Pendente |
 | R39 | Testes de aceitação no formato Dado/Quando/Então | PIT I, MT | `docs/situacao-3/testes-aceitacao.md` | Em andamento |
 | R40 | Documentar verificação e validação mostrando o comportamento esperado | SP3 | Relatório de testes com evidências | Pendente |
-| R41 | Formulário/template para testadores (bugs, sugestões, prints) com no mínimo: nome, data, o que funcionou, o que não funcionou e o que corrigir, funcionalidade não testada e motivo | SP3, PF | Formulário online + modelo em `docs/situacao-3/` | Pendente |
+| R41 | Formulário/template para testadores (bugs, sugestões, prints) com no mínimo: nome, data, o que funcionou, o que não funcionou e o que corrigir, funcionalidade não testada e motivo | SP3, PF | `docs/situacao-3/formulario-de-teste.docx` (Word, 9 seções, roteiro com 18 itens ligados às histórias) | Em andamento |
 | R42 | 5 testadores reais (colegas ou profissionais) | SP3, PF, FE | 5 respostas | Pendente |
 | R43 | PDF com as 5 avaliações, sem esconder falhas | PF | `docs/situacao-3/avaliacoes-testadores.pdf` | Pendente |
 | R44 | Corrigir e melhorar conforme sugestões pertinentes, registrando na documentação | SP3 | Issues/commits vinculados + registro de alterações | Pendente |
