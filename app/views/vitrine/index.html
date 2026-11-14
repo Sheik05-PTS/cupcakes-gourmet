@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf, foto %}
+{% set aba = "vitrine" %}
+
+{% block conteudo %}
+  <form class="busca" method="get" action="{{ url_for('vitrine.index') }}" role="search">
+    <label class="sr-only" for="busca">Buscar cupcake</label>
+    <input class="input" id="busca" name="busca" type="search" value="{{ filtros.busca }}" placeholder="Buscar cupcake">
+    {% for nome, valor in [('sabor', filtros.sabor_id), ('ocasiao', filtros.ocasiao_id), ('restricao', filtros.restricao_id),
+                           ('preco_min', filtros.preco_min), ('preco_max', filtros.preco_max)] if valor is not none %}
+      <input type="hidden" name="{{ nome }}" value="{{ valor }}">
+    {% endfor %}
+    <button class="chip {{ 'on' if filtros.ativos() }}" type="button" data-abrir="dialogo-filtros" style="min-height:46px;border-radius:10px">
+      {{ icone('filter', 'i p') }}Filtrar
+    </button>
+  </form>
+
+  {% for erro in filtros.erros %}
+    <div class="aviso err">{{ icone('alert', 'i p') }}{{ erro }}</div>
+  {% endfor %}
+
+  {% if filtros.ativos() %}
+    {% set base = request.args.to_dict() %}
+    <div class="chips" aria-label="Filtros ativos">
+      {% macro chip_ativo(base, param, texto) %}
+        {% set sem = base.copy() %}{% set _ = sem.pop(param, None) %}
+        <a class="chip on" href="{{ url_for('vitrine.index', **sem) }}" aria-label="Remover filtro {{ texto }}">{{ texto }} {{ icone('x', 'i p') }}</a>
+      {% endmacro %}
+      {% if filtros.busca %}{{ chip_ativo(base, 'busca', '“' ~ filtros.busca ~ '”') }}{% endif %}
+      {% for s in sabores if s.id == filtros.sabor_id %}{{ chip_ativo(base, 'sabor', s.nome) }}{% endfor %}
+      {% for o in ocasioes if o.id == filtros.ocasiao_id %}{{ chip_ativo(base, 'ocasiao', o.nome) }}{% endfor %}
+      {% for r in restricoes if r.id == filtros.restricao_id %}{{ chip_ativo(base, 'restricao', r.nome) }}{% endfor %}
+      {% if filtros.preco_min is not none %}{{ chip_ativo(base, 'preco_min', 'A partir de ' ~ filtros.preco_min | moeda) }}{% endif %}
+      {% if filtros.preco_max is not none %}{{ chip_ativo(base, 'preco_max', 'Até ' ~ filtros.preco_max | moeda) }}{% endif %}
+    </div>
+  {% endif %}
+
+  {% if cupcakes %}
+    <div class="grade">
+      {% for c in cupcakes %}
+        <article class="card {{ 'esgotado' if not c.disponivel() }}">
+          {% if not c.disponivel() %}<span class="tarja">ESGOTADO</span>{% endif %}
+          <a href="{{ url_for('vitrine.detalhe', cupcake_id=c.id) }}">
+            <div class="img">{{ foto(c) }}</div>
+          </a>
+          <div class="info">
+            <a class="nome" href="{{ url_for('vitrine.detalhe', cupcake_id=c.id) }}" style="text-decoration:none">{{ c.nome }}</a>
+            <span class="tags">{{ c.ocasioes | map(attribute='nome') | join(' · ') }}</span>
+            <div class="acoes">
+              <span class="preco" {% if not c.disponivel() %}style="color:var(--muted)"{% endif %}>{{ c.preco | moeda }}</span>
+              {% if c.disponivel() %}
+                {% if c.personalizavel %}
+                  <a class="mais" href="{{ url_for('vitrine.detalhe', cupcake_id=c.id) }}" aria-label="Escolher e adicionar {{ c.nome }}">{{ icone('plus', 'i p') }}</a>
+                {% else %}
+                  <form method="post" action="{{ url_for('carrinho.adicionar') }}">
+                    {{ csrf() }}
+                    <input type="hidden" name="cupcake_id" value="{{ c.id }}">
+                    <input type="hidden" name="quantidade" value="1">
+                    <button class="mais" type="submit" aria-label="Adicionar 1 {{ c.nome }} ao carrinho">{{ icone('plus', 'i p') }}</button>
+                  </form>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% elif filtros.ativos() %}
+    <div class="vazio-estado">
+      <div class="circ">{{ icone('search') }}</div>
+      <h2>Nenhum cupcake encontrado com esses filtros</h2>
+      <p class="sub">Tente remover algum filtro.</p>
+      <a class="btn sec peq" href="{{ url_for('vitrine.index') }}">Limpar filtros</a>
+    </div>
+  {% else %}
+    <div class="vazio-estado">
+      <div class="circ">{{ icone('store') }}</div>
+      <h2>Nenhum cupcake disponível no momento.</h2>
+      <p class="sub">Volte mais tarde: a vitrine é atualizada todos os dias.</p>
+    </div>
+  {% endif %}
+
+  <dialog class="folha" id="dialogo-filtros" aria-labelledby="titulo-filtros">
+    <form class="conteudo" method="get" action="{{ url_for('vitrine.index') }}">
+      <div class="alca"></div>
+      <div class="entre">
+        <h2 id="titulo-filtros" style="font-size:18px">Filtrar cupcakes</h2>
+        <a class="link" href="{{ url_for('vitrine.index') }}">Limpar filtros</a>
+      </div>
+      {% if filtros.busca %}<input type="hidden" name="busca" value="{{ filtros.busca }}">{% endif %}
+
+      <fieldset class="campo" style="border:0;padding:0;margin:0">
+        <legend class="rotulo">Sabor</legend>
+        <div class="chips">
+          <label><input type="radio" name="sabor" value="" {{ 'checked' if not filtros.sabor_id }}><span class="chip">Todos</span></label>
+          {% for s in sabores %}
+            <label><input type="radio" name="sabor" value="{{ s.id }}" {{ 'checked' if s.id == filtros.sabor_id }}><span class="chip">{{ s.nome }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <div class="campo">
+        <span class="rotulo">Preço (R$)</span>
+        <div class="duas">
+          <input class="input" type="number" name="preco_min" min="0" step="0.5" inputmode="decimal" placeholder="Mínimo"
+                 aria-label="Preço mínimo" value="{{ filtros.preco_min if filtros.preco_min is not none }}">
+          <input class="input" type="number" name="preco_max" min="0" step="0.5" inputmode="decimal" placeholder="Máximo"
+                 aria-label="Preço máximo" value="{{ filtros.preco_max if filtros.preco_max is not none }}">
+        </div>
+      </div>
+
+      <fieldset class="campo" style="border:0;padding:0;margin:0">
+        <legend class="rotulo">Ocasião</legend>
+        <div class="chips">
+          <label><input type="radio" name="ocasiao" value="" {{ 'checked' if not filtros.ocasiao_id }}><span class="chip">Todas</span></label>
+          {% for o in ocasioes %}
+            <label><input type="radio" name="ocasiao" value="{{ o.id }}" {{ 'checked' if o.id == filtros.ocasiao_id }}><span class="chip">{{ o.nome }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset class="campo" style="border:0;padding:0;margin:0">
+        <legend class="rotulo">Restrição alimentar</legend>
+        <div class="chips">
+          <label><input type="radio" name="restricao" value="" {{ 'checked' if not filtros.restricao_id }}><span class="chip">Nenhuma</span></label>
+          {% for r in restricoes %}
+            <label><input type="radio" name="restricao" value="{{ r.id }}" {{ 'checked' if r.id == filtros.restricao_id }}><span class="chip">{{ r.nome }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <div class="linha">
+        <button class="btn sec" type="button" data-fechar>Cancelar</button>
+        <button class="btn prim" type="submit">Ver cupcakes</button>
+      </div>
+    </form>
+  </dialog>
+{% endblock %}

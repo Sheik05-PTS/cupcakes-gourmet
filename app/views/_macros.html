@@ -1,0 +1,12 @@
+{%- macro icone(nome, classe="i") -%}<svg class="{{ classe }}" aria-hidden="true"><use href="#i-{{ nome }}"/></svg>{%- endmacro -%}
+
+{%- macro csrf() -%}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{%- endmacro -%}
+
+{%- macro foto(cupcake, classe="") -%}
+<img class="{{ classe }}" src="{{ cupcake.foto_url or url_for('static', filename='img/cupcakes/padrao.svg') }}"
+     alt="Cupcake {{ cupcake.nome }}" loading="lazy">
+{%- endmacro -%}
+
+{%- macro erro_campo(erros, campo) -%}
+{% if erros and erros.get(campo) %}<span class="msg-campo" id="erro-{{ campo }}">{{ icone('alert', 'i p') }}{{ erros[campo] }}</span>{% endif %}
+{%- endmacro -%}

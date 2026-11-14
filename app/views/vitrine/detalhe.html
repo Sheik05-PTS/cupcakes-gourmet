@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf, foto %}
+{% block titulo %}{{ cupcake.nome }} · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  <a class="icone-btn" href="{{ url_for('vitrine.index') }}" aria-label="Voltar para a vitrine">{{ icone('back') }}</a>
+  <h1>Detalhes</h1>
+  <a class="icone-btn" href="{{ url_for('carrinho.ver') }}" aria-label="Carrinho, {{ qtd_carrinho }} itens">
+    {{ icone('cart') }}{% if qtd_carrinho %}<span class="badge">{{ qtd_carrinho }}</span>{% endif %}
+  </a>
+{% endblock %}
+
+{% block conteudo %}
+  <div class="foto-grande">{{ foto(cupcake) }}</div>
+
+  <div class="entre">
+    <h2 style="font-size:21px">{{ cupcake.nome }}</h2>
+    <span class="preco" style="font-size:18px">{{ cupcake.preco | moeda }}</span>
+  </div>
+
+  <div class="etiquetas">
+    <span class="etiqueta">{{ cupcake.sabor.nome }}</span>
+    {% for o in cupcake.ocasioes %}<span class="etiqueta">{{ o.nome }}</span>{% endfor %}
+    {% for r in cupcake.restricoes %}<span class="etiqueta restricao">{{ icone('check', 'i p') }} {{ r.nome }}</span>{% endfor %}
+  </div>
+
+  <p>{{ cupcake.descricao }}</p>
+  <p class="sub"><b style="color:var(--ink)">Ingredientes:</b> {{ cupcake.ingredientes }}</p>
+
+  {% if not cupcake.disponivel() %}
+    <div class="aviso warn">{{ icone('alert', 'i p') }}Este cupcake está esgotado no momento. Volte em breve!</div>
+  {% endif %}
+{% endblock %}
+
+{% block rodape %}
+  {% if cupcake.disponivel() %}
+  <form class="rodape-acao" method="post" action="{{ url_for('carrinho.adicionar') }}" id="form-adicionar"
+        data-preco="{{ cupcake.preco }}">
+    {{ csrf() }}
+    <input type="hidden" name="cupcake_id" value="{{ cupcake.id }}">
+    <input type="hidden" name="voltar" value="{{ url_for('carrinho.ver') }}">
+
+    {% if cupcake.personalizavel %}
+      <div class="duas personalizacao">
+        <div class="campo">
+          <label for="recheio">Recheio</label>
+          <select class="input" id="recheio" name="recheio_id" data-acrescimo>
+            {% for o in recheios %}
+              <option value="{{ o.id }}" data-acrescimo="{{ o.acrescimo }}">{{ o.nome }}{% if o.acrescimo %} (+ {{ o.acrescimo | moeda }}){% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="campo">
+          <label for="cobertura">Cobertura</label>
+          <select class="input" id="cobertura" name="cobertura_id" data-acrescimo>
+            {% for o in coberturas %}
+              <option value="{{ o.id }}" data-acrescimo="{{ o.acrescimo }}">{{ o.nome }}{% if o.acrescimo %} (+ {{ o.acrescimo | moeda }}){% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="mensagem">Mensagem no topper (opcional)</label>
+        <input class="input" id="mensagem" name="mensagem" maxlength="60" placeholder="Ex.: Feliz aniversário, Ana!"
+               aria-describedby="contador-mensagem" data-contador="contador-mensagem">
+        <span class="contador" id="contador-mensagem">0/60</span>
+      </div>
+    {% endif %}
+
+    <div class="entre" style="gap:12px">
+      <div class="stepper" data-stepper>
+        <button type="button" data-passo="-1" aria-label="Diminuir quantidade">{{ icone('minus', 'i p') }}</button>
+        <input type="number" name="quantidade" value="1" min="1" max="{{ quantidade_maxima }}" aria-label="Quantidade" inputmode="numeric">
+        <button type="button" data-passo="1" aria-label="Aumentar quantidade">{{ icone('plus', 'i p') }}</button>
+      </div>
+      <button class="btn prim" type="submit" style="flex:1">Adicionar · <span data-total>{{ cupcake.preco | moeda }}</span></button>
+    </div>
+    {% if quantidade_maxima < config.QTD_MAX_POR_ITEM %}
+      <p class="ajuda">Restam {{ cupcake.estoque }} unidades.</p>
+    {% endif %}
+  </form>
+  {% else %}
+  <div class="rodape-acao">
+    <button class="btn" disabled>Esgotado</button>
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block tabbar %}{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone %}
+{%- set codigo = erro.code if erro else 500 -%}
+{%- if codigo == 404 and erro.description == 'cupcake' -%}
+  {%- set titulo, texto = 'Cupcake não encontrado', 'Ele pode ter saído do cardápio.' -%}
+{%- elif codigo == 404 and erro.description == 'pedido' -%}
+  {%- set titulo, texto = 'Pedido não encontrado', 'Confira o número do pedido em "Meus pedidos".' -%}
+{%- elif codigo == 404 -%}
+  {%- set titulo, texto = 'Página não encontrada', 'O endereço pode estar errado.' -%}
+{%- elif codigo == 403 -%}
+  {%- set titulo, texto = 'Acesso negado', 'Esta área é exclusiva da equipe da loja.' -%}
+{%- elif codigo == 400 -%}
+  {%- set titulo, texto = 'Não foi possível concluir', 'A página ficou aberta por muito tempo. Volte e tente de novo.' -%}
+{%- elif codigo == 405 -%}
+  {%- set titulo, texto = 'Página não encontrada', 'O endereço pode estar errado.' -%}
+{%- else -%}
+  {%- set titulo, texto = 'Algo deu errado', 'Tivemos um problema do nosso lado. Tente de novo em alguns instantes.' -%}
+{%- endif -%}
+{% block titulo %}{{ titulo }} · Cupcakes Gourmet{% endblock %}
+
+{% block conteudo %}
+  <div class="vazio-estado">
+    <div class="circ">{{ icone('lock' if codigo == 403 else ('search' if codigo in (404, 405) else 'alert')) }}</div>
+    <h2>{{ titulo }}</h2>
+    <p class="sub">{{ texto }}</p>
+    <a class="btn prim peq" href="{{ url_for('vitrine.index') }}">Voltar à vitrine</a>
+  </div>
+{% endblock %}

@@ -216,17 +216,17 @@ Preenchida ao longo da Situação 2 (código) e da Situação 3 (testes).
 
 | História | Regras | Controller | Model(s) | Testes unitários | Testes de integração | Aceitação |
 |---|---|---|---|---|---|---|
-| US01 | RN02 | vitrine | Cupcake | | | Pendente |
-| US02 | — | vitrine | Cupcake | | | Pendente |
-| US03 | RN02 | vitrine | Cupcake | | | Pendente |
-| US04 | RN03, RN05, RN06 | carrinho | Carrinho, Cupcake | | | Pendente |
-| US05 | RN04, RN05 | carrinho | OpcaoPersonalizacao | | | Pendente |
-| US06 | RN03 | carrinho | Carrinho | | | Pendente |
+| US01 | RN02 | vitrine | Cupcake | `tests/unit/test_regras_catalogo.py` (rn02) | `tests/integration/test_vitrine.py` (ca01_1 a ca01_4) | Pendente |
+| US02 | — | vitrine | FiltrosVitrine | `tests/unit/test_regras_catalogo.py` (ca02) | `tests/integration/test_vitrine.py` (ca02_1 a ca02_7) | Pendente |
+| US03 | RN02 | vitrine | Cupcake | — | `tests/integration/test_vitrine.py` (ca03_1, ca03_2) | Pendente |
+| US04 | RN03, RN05, RN06 | carrinho | Carrinho, Cupcake | `tests/unit/test_regras_catalogo.py` (rn03, rn05) | `tests/integration/test_carrinho.py` (ca04_1 a ca04_4) | Pendente |
+| US05 | RN04, RN05 | carrinho | Carrinho, OpcaoPersonalizacao | `tests/unit/test_regras_catalogo.py` (rn04) | `tests/integration/test_vitrine.py` (ca05_1, ca05_4); `tests/integration/test_carrinho.py` (ca05_2 a ca05_5) | Pendente |
+| US06 | RN03 | carrinho | Carrinho | `tests/unit/test_regras_catalogo.py` (carrinho) | `tests/integration/test_carrinho.py` (ca06_1 a ca06_4) | Pendente |
 | US07 | RN07, RN09 | checkout | Cupom | | | Pendente |
 | US08 | RN11–RN14, RN21 | pagamento | Pagamento, GatewaySimulado | | | Pendente |
 | US09 | RN10 | pagamento | Pedido | | | Pendente |
 | US10 | RN18 | conta | Endereco | | | Pendente |
-| US11 | RN08, RN09 | carrinho, checkout | AreaEntrega | | | Pendente |
+| US11 | RN08, RN09 | carrinho, checkout | AreaEntrega | `tests/unit/test_utilitarios.py` (rn18) | `tests/integration/test_carrinho.py` (ca11_3); checkout pendente | Pendente |
 | US12 | RN15 | pedidos | Pedido, HistoricoStatus | | | Pendente |
 | US13 | RN06, RN17 | autenticacao | Usuario | | | Pendente |
 | US15 | RN01, RN10, RN19 | admin_cupcakes | Cupcake | | | Pendente |

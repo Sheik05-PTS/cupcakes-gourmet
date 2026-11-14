@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icone, csrf, foto %}
+{% block titulo %}Carrinho · Cupcakes Gourmet{% endblock %}
+
+{% block appbar %}
+  <a class="icone-btn" href="{{ url_for('vitrine.index') }}" aria-label="Voltar para a vitrine">{{ icone('back') }}</a>
+  <h1>Carrinho</h1>
+{% endblock %}
+
+{% block conteudo %}
+  {% if linhas %}
+    <div class="caixa">
+      {% for l in linhas %}
+        {% if not loop.first %}<div class="sep"></div>{% endif %}
+        <div class="item">
+          <a class="thumb" href="{{ url_for('vitrine.detalhe', cupcake_id=l.cupcake.id) }}">{{ foto(l.cupcake) }}</a>
+          <div class="meio">
+            <div class="entre"><span class="nome">{{ l.cupcake.nome }}</span><span class="preco">{{ l.subtotal | moeda }}</span></div>
+            <div class="sub">{{ l.personalizacao or 'Sem personalização' }}</div>
+            {% if l.indisponivel %}
+              <div class="msg-campo">{{ icone('alert', 'i p') }}
+                {% if not l.cupcake.disponivel() %}Este cupcake esgotou. Remova para continuar.{% else %}Só temos {{ l.cupcake.estoque }} unidades disponíveis.{% endif %}
+              </div>
+            {% endif %}
+            <div class="entre" style="margin-top:6px">
+              <form method="post" action="{{ url_for('carrinho.alterar', chave=l.chave) }}" class="stepper">
+                {{ csrf() }}
+                <button type="submit" name="acao" value="menos" aria-label="Diminuir quantidade de {{ l.cupcake.nome }}">{{ icone('minus', 'i p') }}</button>
+                <input type="number" name="quantidade" value="{{ l.quantidade }}" min="1" max="{{ config.QTD_MAX_POR_ITEM }}"
+                       aria-label="Quantidade de {{ l.cupcake.nome }}" data-enviar-ao-mudar>
+                <button type="submit" name="acao" value="mais" aria-label="Aumentar quantidade de {{ l.cupcake.nome }}">{{ icone('plus', 'i p') }}</button>
+              </form>
+              <span class="sub">{{ l.preco_unitario | moeda }} cada</span>
+              <form method="post" action="{{ url_for('carrinho.remover', chave=l.chave) }}">
+                {{ csrf() }}
+                <button class="icone-btn" type="submit" aria-label="Remover {{ l.cupcake.nome }}" style="color:var(--muted)">{{ icone('trash', 'i p') }}</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <form class="caixa" method="post" action="{{ url_for('carrinho.estimar_frete') }}">
+      {{ csrf() }}
+      <label class="rotulo" for="cep">Calcular frete e prazo</label>
+      <div class="linha">
+        <input class="input" id="cep" name="cep" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000"
+               value="{{ cep | cep if cep }}" maxlength="9" data-mascara-cep>
+        <button class="btn sec peq" type="submit">Calcular</button>
+      </div>
+      {% if estimativa %}
+        <div class="aviso ok">{{ icone('truck', 'i p') }}Frete {{ estimativa.valor_frete | moeda }} · entrega {{ estimativa.prazo_texto() }}</div>
+      {% elif erro_cep %}
+        <div class="aviso err">{{ icone('alert', 'i p') }}{{ erro_cep }}</div>
+      {% endif %}
+    </form>
+
+    <div class="resumo">
+      <div><span>Subtotal ({{ qtd_carrinho }} {{ 'item' if qtd_carrinho == 1 else 'itens' }})</span><span class="preco">{{ subtotal | moeda }}</span></div>
+      {% if estimativa %}<div class="sub"><span>Frete estimado</span><span>{{ estimativa.valor_frete | moeda }}</span></div>{% endif %}
+    </div>
+  {% else %}
+    <div class="vazio-estado">
+      <div class="circ">{{ icone('cart') }}</div>
+      <h2>Seu carrinho está vazio</h2>
+      <p class="sub">Escolha seus cupcakes na vitrine.</p>
+      <a class="btn prim peq" href="{{ url_for('vitrine.index') }}">Ver cupcakes</a>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block rodape %}
+  {% if linhas %}
+    <div class="rodape-acao">
+      {% if linhas | selectattr('indisponivel') | list %}
+        <button class="btn" disabled>Ajuste os itens indisponíveis</button>
+      {% else %}
+        <a class="btn prim" href="/checkout">Finalizar pedido</a>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

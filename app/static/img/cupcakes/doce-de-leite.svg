@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Ilustração do cupcake Doce de Leite com Flor de Sal">
+  <title>Doce de Leite com Flor de Sal</title>
+  <rect width="400" height="300" fill="#f8ecdc"/>
+  <ellipse cx="200" cy="262" rx="78" ry="10" fill="#000" opacity=".06"/>
+  <g transform="translate(110 40) scale(1.8)">
+    <path d="M26 58 L74 58 L67 90 Q50 94 33 90 Z" fill="#f3d2a2"/>
+    <path d="M36 60 L39 89 M46 60 L47 91 M54 60 L53 91 M64 60 L61 89" stroke="#000" stroke-opacity=".12" stroke-width="2"/>
+    <path d="M20 60 C16 49 27 42 34 45 C31 35 43 28 50 33 C57 27 70 33 66 43 C75 41 85 50 80 60 Q50 66 20 60 Z" fill="#d9a066"/>
+    <path d="M38 40 C38 27 62 27 62 40 Q50 44 38 40 Z" fill="#d9a066"/>
+    <path d="M30 52 C38 50 46 53 52 51" stroke="#fff" stroke-opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="25" r="6" fill="#a0612b"/>
+    <circle cx="48" cy="23" r="1.8" fill="#fff" fill-opacity=".6"/>
+  </g>
+</svg>

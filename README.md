@@ -44,8 +44,16 @@ cupcakes-gourmet/
 │   ├── situacao-1/        planejamento revisado, UML, telas e modelo de dados
 │   ├── situacao-2/        manual de uso e decisões técnicas
 │   └── situacao-3/        testes, avaliações e laudo de qualidade
-├── app/                   código da aplicação (models, views, controllers)
-└── tests/                 testes automatizados
+├── app/
+│   ├── models/            M: entidades e regras de negócio
+│   ├── views/             V: templates HTML
+│   ├── static/            V: CSS, JavaScript e imagens
+│   └── controllers/       C: rotas (blueprints)
+├── scripts/               utilitários (ilustrações dos cupcakes)
+├── tests/
+│   ├── unit/              regras de negócio, sem banco
+│   └── integration/       rotas e banco PostgreSQL
+└── wsgi.py                ponto de entrada
 ```
 
 ## Documentação da Situação 1
@@ -63,20 +71,44 @@ cupcakes-gourmet/
 | [Protótipo navegável](docs/situacao-1/ihc/prototipo/index.html) | As 21 telas em HTML |
 | [Projeto do PIT I (original)](docs/situacao-1/00-pit1-projeto-de-intervencao.pdf) | Documento de partida |
 
-## Banco de dados
+## Como rodar localmente
 
-Com o PostgreSQL instalado, crie um banco vazio e rode os scripts:
+Requisitos: Python 3.11 ou mais novo e PostgreSQL 14 ou mais novo.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+cp .env.example .env          # ajuste SECRET_KEY e as URLs dos bancos
+```
+
+Crie o banco (vazio) e carregue as tabelas e os dados iniciais:
 
 ```bash
 createdb cupcakes
-psql -d cupcakes -f database/schema.sql
-psql -d cupcakes -f database/seed.sql
+flask --app wsgi banco criar
+flask --app wsgi criar-admin --email loja.teste@example.com --senha Cupcake2026
 ```
 
-Para conferir as restrições de integridade num banco de teste vazio:
+Suba a aplicação e acesse http://localhost:5000:
+
+```bash
+flask --app wsgi run --debug
+```
+
+## Testes
+
+Os testes de integração usam um PostgreSQL separado, definido em `DATABASE_URL_TESTE` (ele é apagado e recriado a cada execução):
+
+```bash
+createdb cupcakes_teste
+pytest --cov=app
+```
+
+Cada teste tem no nome o critério de aceitação que verifica (ex.: `test_ca04_3_...` verifica o CA04.3 de [03-requisitos.md](docs/situacao-1/03-requisitos.md)).
+
+Para conferir só as restrições do banco num banco vazio:
 
 ```bash
 python database/verificar_schema.py "postgresql://usuario:senha@localhost/cupcakes_teste"
 ```
-
-As instruções para rodar a aplicação entram aqui assim que o código da Situação 2 estiver no repositório.

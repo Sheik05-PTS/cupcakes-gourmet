@@ -1,0 +1,60 @@
+{% from "_macros.html" import icone, csrf %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#9c2f5b">
+  <meta name="description" content="Cupcakes gourmet feitos no dia, com entrega em São Paulo.">
+  <title>{% block titulo %}Cupcakes Gourmet{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/icone.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+{% include "_icones.html" %}
+<div class="app {% block classe_app %}{% endblock %} {% if self.tabbar() | trim %}tem-tabbar{% endif %}">
+
+  <header class="appbar">
+    {% block appbar %}
+      <a class="marca" href="{{ url_for('vitrine.index') }}">Cupcakes Gourmet<small>Feitos no dia, entregues na sua porta</small></a>
+      <a class="icone-btn" href="{{ url_for('carrinho.ver') }}" aria-label="Carrinho, {{ qtd_carrinho }} itens">
+        {{ icone('cart') }}{% if qtd_carrinho %}<span class="badge">{{ qtd_carrinho }}</span>{% endif %}
+      </a>
+    {% endblock %}
+  </header>
+
+  <main id="conteudo">
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  {% block rodape %}{% endblock %}
+
+  {%- block tabbar -%}
+  <nav class="tabbar" aria-label="Navegação principal">
+    <a href="{{ url_for('vitrine.index') }}" class="{{ 'ativo' if aba == 'vitrine' }}">{{ icone('home') }}Vitrine</a>
+    <a href="/pedidos" class="{{ 'ativo' if aba == 'pedidos' }}">{{ icone('list') }}Pedidos</a>
+    <a href="/conta" class="{{ 'ativo' if aba == 'conta' }}">{{ icone('user') }}Conta</a>
+  </nav>
+  {%- endblock -%}
+</div>
+
+<div class="toasts" role="status" aria-live="polite">
+  {% for categoria, mensagem in get_flashed_messages(with_categories=true) %}
+    {% if categoria == 'desfazer' %}
+      <div class="toast" data-duracao="6000">
+        <span>{{ mensagem }}</span>
+        <form method="post" action="{{ url_for('carrinho.desfazer') }}">
+          {{ csrf() }}
+          <button type="submit">DESFAZER</button>
+        </form>
+      </div>
+    {% else %}
+      <div class="toast {{ 'erro' if categoria == 'erro' }}" data-duracao="{{ 6000 if categoria == 'erro' else 3500 }}">{{ mensagem }}</div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -46,14 +46,14 @@ Status: Pendente · Em andamento · Concluído
 | ID | Exigência | Fonte | Entregável | Status |
 |---|---|---|---|---|
 | R23 | Criar usuário no GitHub e repositório público | SP2 | Conta `Sheik05-PTS` + https://github.com/Sheik05-PTS/cupcakes-gourmet | Concluído |
-| R24 | Front-end em HTML, CSS e JavaScript | SP2 | `app/views`, `app/static` | Pendente |
-| R25 | Back-end com padrão MVC | SP2, MT | `app/models`, `app/controllers` | Pendente |
+| R24 | Front-end em HTML, CSS e JavaScript | SP2 | `app/views`, `app/static` | Em andamento |
+| R25 | Back-end com padrão MVC | SP2, MT | `app/models`, `app/controllers` | Em andamento |
 | R26 | Linguagem entre Java, PHP, C#/.NET ou Python | SP2 | Definida em `README.md` e no FE | Concluído |
-| R27 | Testes unitários do back-end (framework xUnit) | SP2, MT | `tests/unit` | Pendente |
-| R28 | Testes do front-end | SP2 | `tests/` (front) | Pendente |
-| R29 | Erros tratados (validação de entrada, páginas de erro, mensagens amigáveis) | SP2 | Código + catálogo de mensagens (R13) | Pendente |
-| R30 | Solução funcional e completa (todas as histórias do MVP) | SP2 | Matriz de rastreabilidade (R06) toda verde | Pendente |
-| R31 | Código-fonte de front e back + bibliotecas (dependências declaradas) | PF | Repositório + `requirements.txt` | Pendente |
+| R27 | Testes unitários do back-end (framework xUnit) | SP2, MT | `tests/unit` | Em andamento |
+| R28 | Testes do front-end | SP2 | `tests/` (front) | Em andamento |
+| R29 | Erros tratados (validação de entrada, páginas de erro, mensagens amigáveis) | SP2 | Código + catálogo de mensagens (R13) | Em andamento |
+| R30 | Solução funcional e completa (todas as histórias do MVP) | SP2 | Matriz de rastreabilidade (R06) toda verde | Em andamento |
+| R31 | Código-fonte de front e back + bibliotecas (dependências declaradas) | PF | Repositório + `requirements.txt` | Em andamento |
 | R32 | Manual de uso | PF | `docs/situacao-2/manual-de-uso.md` (com prints) | Pendente |
 | R33 | Solução hospedada e acessível por link | FE | Link da solução em funcionamento | Pendente |
 | R34 | Revisitar UI/design durante o desenvolvimento e atualizar a documentação | PF | Registro de alterações de IHC | Pendente |
